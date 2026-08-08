@@ -1,15 +1,12 @@
-import Link from "next/link";
-import MarqueeBanner from "@/components/MarqueeBanner";
 import Header from "@/components/Header";
 import HeroBanner from "@/components/HeroBanner";
 import PopupBanner from "@/components/PopupBanner";
-import TopCategories from "@/components/TopCategories";
-import ProductSection from "@/components/ProductSection";
-import BrandsSection from "@/components/BrandsSection";
-import Footer from "@/components/Footer";
+import Footer from "@/components/KafFooter";
 import FloatingContact from "@/components/FloatingContact";
 import ScrollToTop from "@/components/ScrollToTop";
+import FabrilifeHomepage from "@/components/FabrilifeHomepage";
 import ServiceBenefits from "@/components/ServiceBenefits";
+import CategoryListing from "@/components/CategoryListing";
 import { fetchStorefrontProducts } from "@/services/productService";
 import { fetchSiteSettings, type SiteSetting } from "@/services/settingService";
 import { fetchBanners } from "@/services/bannerService";
@@ -37,14 +34,14 @@ export default async function Home({
   const { menu, sub, child } = await searchParams;
   let allProducts: Product[] = [];
   let settings: Partial<SiteSetting> = {};
-  let banners: { slides: BannerItem[]; sideBanners: BannerItem[]; popupBanners: BannerItem[] } = { slides: [], sideBanners: [], popupBanners: [] };
+  let banners: { slides: BannerItem[]; sideBanners: BannerItem[]; popupBanners: BannerItem[]; customBanners: BannerItem[] } = { slides: [], sideBanners: [], popupBanners: [], customBanners: [] };
   let brands: BrandItem[] = [];
   let categoryMenus: CategoryMenuItem[] = [];
 
   const [productsResult, settingsResult, bannersResult, brandsResult, categoryMenusResult] = await Promise.all([
     fetchStorefrontProducts({ limit: 200, page: 1 }).catch(() => ({ products: [] as Product[] })),
     fetchSiteSettings().catch(() => ({} as Partial<SiteSetting>)),
-    fetchBanners().catch(() => ({ slides: [] as BannerItem[], sideBanners: [] as BannerItem[], popupBanners: [] as BannerItem[] })),
+    fetchBanners().catch(() => ({ slides: [] as BannerItem[], sideBanners: [] as BannerItem[], popupBanners: [] as BannerItem[], customBanners: [] as BannerItem[] })),
     fetchBrands().catch(() => [] as BrandItem[]),
     fetchCategoryMenus().catch(() => [] as CategoryMenuItem[]),
   ]);
@@ -87,56 +84,16 @@ export default async function Home({
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
-      <MarqueeBanner text={settings.marqueeText ?? null} />
       <Header logoUrl={settings.logoUrl ?? null} />
       <main className="flex-1">
         {!isFiltered && <HeroBanner slides={banners.slides} sideBanners={banners.sideBanners} />}
         {!isFiltered && <PopupBanner banners={banners.popupBanners} />}
-        {!isFiltered && <TopCategories items={categoryMenus} />}
+        {!isFiltered && <FabrilifeHomepage products={allProducts} categories={categoryMenus} banners={banners.customBanners} settings={settings} brands={brands} />}
 
-        {!isFiltered && (
-          <section className="brand-story">
-            <div className="home-shell brand-story-inner">
-              <p className="brand-story-kicker">Designed for everyday confidence</p>
-              <h1>{settings.metaTitle || "Style that feels like you"}</h1>
-              <p>{settings.metaDescription || "Discover thoughtfully selected fashion, dependable quality and comfortable fits for every day."}</p>
-              <Link href="#collections" className="brand-story-cta">Explore collections</Link>
-            </div>
-          </section>
-        )}
+        {isFiltered && <CategoryListing menu={menu!} sub={sub} child={child} products={allProducts} categories={categoryMenus} />}
 
-        {isFiltered && (
-          <div style={{ width: "90%", margin: "16px auto 0" }}>
-            <Link
-              href="/"
-              style={{ fontSize: 13, color: "#10B8C4", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 4 }}
-            >
-              ← সব পণ্য দেখুন
-            </Link>
-          </div>
-        )}
-
-        <div id="collections">
-        {sections.length > 0 ? (
-          sections.map((s) => (
-            <ProductSection key={s.title} title={s.title} products={s.products} menuParam={menu} />
-          ))
-        ) : (
-          <div style={{ textAlign: "center", padding: "60px 20px", color: "#999" }}>
-            {isFiltered ? (
-              <p>এই ক্যাটাগরিতে কোনো পণ্য পাওয়া যায়নি।</p>
-            ) : (
-              <div className="home-empty-state">
-                <h2>Our collection is being prepared</h2>
-                <p>Please refresh in a moment or explore the categories above.</p>
-              </div>
-            )}
-          </div>
-        )}
-        </div>
-
-        {!isFiltered && <BrandsSection brands={brands} />}
         {!isFiltered && <ServiceBenefits />}
+
       </main>
       <Footer settings={settings} />
       <FloatingContact settings={settings} />

@@ -17,6 +17,7 @@ export interface CategoryMenuItem {
   Id: number;
   label: string;
   imageUrl: string | null;
+  sub: NavSubItem[];
 }
 
 function normalizeChildItems(value: unknown): NavChildItem[] {
@@ -85,7 +86,7 @@ export async function fetchCategoryMenus(): Promise<CategoryMenuItem[]> {
     const json = await res.json();
     const items = unwrapApiList<ApiMenuItem>(json);
     return items
-      .map((m) => ({ Id: m.Id, label: m.label, imageUrl: toImageUrl(m.imageFile ?? m.image) }))
+      .map((m) => ({ Id: m.Id, label: m.label, imageUrl: toImageUrl(m.imageFile ?? m.image), sub: normalizeSubItems(m.subItems) }))
       .filter((m) => m.imageUrl);
   } catch {
     return [];

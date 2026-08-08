@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
 import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import Footer from "@/components/KafFooter";
 import FloatingContact from "@/components/FloatingContact";
 import MarqueeBanner from "@/components/MarqueeBanner";
 import { fetchSiteSettings, type SiteSetting } from "@/services/settingService";

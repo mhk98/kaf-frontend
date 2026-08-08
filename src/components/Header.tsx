@@ -155,7 +155,7 @@ function HeaderInner({ logoUrl }: HeaderProps) {
   }, []);
 
   return (
-    <header className="w-full sticky top-0 z-50 shadow-md">
+    <header className="site-header w-full sticky top-0 z-50">
 
       {/* ── Logo / Search / Cart bar ── */}
       <div className="bg-white border-b border-gray-100">
@@ -298,7 +298,7 @@ function HeaderInner({ logoUrl }: HeaderProps) {
         <div className="hidden md:grid header-logo-bar" style={{ gap: 0 }}>
           {/* Logo */}
           <Link href="/" className="flex items-center">
-            <div style={{ position: "relative", width: "100%", maxWidth: 260, height: 70 }}>
+            <div className="desktop-logo-box">
               {resolvedLogo && (
                 <img src={resolvedLogo} alt="Logo" style={{ width: "100%", height: "100%", objectFit: "contain", objectPosition: "left center" }} />
               )}
@@ -306,24 +306,24 @@ function HeaderInner({ logoUrl }: HeaderProps) {
           </Link>
 
           {/* Search */}
-          <div style={{ padding: "0 11px", position: "relative" }} ref={searchRef}>
-            <div style={{ display: "flex", alignItems: "center", height: 44, border: `2px solid ${PRIMARY}`, borderRadius: 50, overflow: "hidden" }}>
+          <div className="desktop-search" ref={searchRef}>
+            <div className="desktop-search-box">
               <button
-                style={{ width: "12%", height: "100%", background: "#f7f7f7", display: "flex", alignItems: "center", justifyContent: "center", border: "none", flexShrink: 0, cursor: "pointer" }}
+                className="desktop-search-button"
                 onClick={() => search.trim() && setSearchOpen((o) => !o)}
               >
-                <svg width={20} height={20} fill="none" stroke={PRIMARY} strokeWidth={2.5} viewBox="0 0 24 24">
+                <svg width={18} height={18} fill="none" stroke="currentColor" strokeWidth={1.7} viewBox="0 0 24 24">
                   <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
                 </svg>
               </button>
               <input
                 type="text"
-                placeholder="Search Product..."
+                placeholder="Search"
                 value={search}
                 onFocus={loadProducts}
                 onChange={(e) => setSearch(e.target.value)}
                 onKeyDown={(e) => e.key === "Escape" && setSearchOpen(false)}
-                style={{ width: "90%", height: "100%", background: "#f7f7f7", border: "none", outline: "none", padding: "0 12px", fontSize: 12, color: "#555" }}
+                className="desktop-search-input"
               />
               {search && (
                 <button onClick={() => { setSearch(""); setSearchOpen(false); }} style={{ background: "none", border: "none", cursor: "pointer", padding: "0 10px", color: "#999", flexShrink: 0, fontSize: 18, lineHeight: 1 }}>×</button>
@@ -360,29 +360,34 @@ function HeaderInner({ logoUrl }: HeaderProps) {
           </div>
 
           {/* Right icons */}
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 20 }}>
-            <Link href="/track-order" className="hidden md:flex flex-col items-center gap-0.5 text-gray-600 hover:text-[#073763] transition-colors">
+          <div className="desktop-actions">
+            <Link href="/track-order" className="header-action">
               <svg width={24} height={24} fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
                 <rect x="1" y="3" width="15" height="13" rx="1" /><path d="M16 8h4l3 3v5h-7V8z" /><circle cx="5.5" cy="18.5" r="2.5" /><circle cx="18.5" cy="18.5" r="2.5" />
               </svg>
-              <span style={{ fontSize: 11 }}>Track Order</span>
+              <span>Track</span>
             </Link>
 
             {isLoggedIn ? (
-              <button onClick={customerLogout} className="hidden sm:flex flex-col items-center gap-0.5 text-gray-600 hover:text-[#073763] transition-colors" style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }}>
+              <button onClick={customerLogout} className="header-action" style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }}>
                 <svg width={24} height={24} fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" /></svg>
-                <span style={{ fontSize: 11 }}>Logout</span>
+                <span>Logout</span>
               </button>
             ) : (
-              <Link href="/login" className="hidden sm:flex flex-col items-center gap-0.5 text-gray-600 hover:text-[#073763] transition-colors">
+              <Link href="/login" className="header-action">
                 <svg width={24} height={24} fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
-                <span style={{ fontSize: 11 }}>Login</span>
+                <span>Profile</span>
               </Link>
             )}
 
+            <Link href="/?menu=wishlist" className="header-action" aria-label="Wishlist">
+              <svg width={24} height={24} fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 00-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 00-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 00-.1-7.8z" /></svg>
+              <span>Wishlist</span>
+            </Link>
+
             {/* Cart with hover dropdown */}
             <div ref={cartRef} className="relative" onMouseEnter={() => setCartOpen(true)} onMouseLeave={() => setCartOpen(false)}>
-              <button className="flex flex-col items-center gap-0.5 text-gray-600 hover:text-[#073763] transition-colors">
+              <button className="header-action">
                 <div className="relative">
                   <svg width={26} height={26} fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
                     <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4zM3 6h18M16 10a4 4 0 01-8 0" />
@@ -434,42 +439,77 @@ function HeaderInner({ logoUrl }: HeaderProps) {
       </div>
 
       {/* ── Navigation bar ── */}
-      <nav style={{ backgroundColor: PRIMARY }} ref={navRef}>
-        <div style={{ width: "90%", margin: "0 auto" }}>
+      <nav className="main-navigation" ref={navRef}>
+        <div className="main-navigation-inner">
 
           {/* Desktop nav — justify-evenly so equal gap between AND at edges */}
-          <ul className="hidden md:flex items-center justify-evenly">
-            {navItems.map((item) => {
+          <ul className="desktop-navigation hidden md:flex items-center">
+            {navItems.slice(0, 5).map((item) => {
               const subItems = Array.isArray(item.sub) ? item.sub : [];
               const isActive = activeMenu.toLowerCase() === item.label.toLowerCase();
+              const menuProducts = allProducts.filter((product) => product.category?.toLowerCase() === item.label.toLowerCase()).slice(0, 6);
+              const itemIndex = navItems.findIndex((navItem) => navItem.label === item.label);
+              const menuAccent = ["#ff5b73", "#f24ca5", "#f97316", "#eab308", "#08a89f"][itemIndex % 5];
 
               return (
                 <li
                   key={item.label}
                   className="relative"
-                  onMouseEnter={() => subItems.length > 0 && setOpenDrop(item.label)}
+                  onMouseEnter={() => {
+                    if (subItems.length === 0) return;
+                    setOpenDrop(item.label);
+                    void loadProducts();
+                  }}
                   onMouseLeave={() => setOpenDrop(null)}
                 >
                   <Link
                     href={`/?menu=${encodeURIComponent(item.label)}`}
-                    className="flex items-center gap-1 text-white uppercase font-semibold whitespace-nowrap transition-colors hover:opacity-80"
+                    className="desktop-nav-link flex items-center gap-1 uppercase font-semibold whitespace-nowrap transition-colors"
                     style={{
                       fontSize: 13,
-                      padding: "18px 6px",
+                      padding: "30px 10px 27px",
                       display: "flex",
                       borderBottom: isActive ? `3px solid ${SECONDARY}` : "3px solid transparent",
                     }}
                   >
                     {item.label}
-                    {subItems.length > 0 && (
-                      <svg width={10} height={10} viewBox="0 0 10 10" fill="none" style={{ marginLeft: 3, flexShrink: 0 }}>
-                        <path d="M1 3l4 4 4-4" stroke="white" strokeWidth={1.8} />
-                      </svg>
-                    )}
                   </Link>
 
-                  {/* Dropdown */}
                   {subItems.length > 0 && openDrop === item.label && (
+                    <div className="header-mega-menu animate-fadeIn" style={{ borderTopColor: menuAccent }}>
+                      <div className="header-mega-content">
+                        <div className="header-mega-taxonomy">
+                          {subItems.slice(0, 3).map((sub) => {
+                            const childItems = Array.isArray(sub.childItems) ? sub.childItems : [];
+                            return (
+                              <section key={`mega-${sub.label}`} className="header-mega-column">
+                                <Link href={`/?menu=${encodeURIComponent(item.label)}&sub=${encodeURIComponent(sub.label)}`} className="header-mega-heading" style={{ color: menuAccent }} onClick={() => setOpenDrop(null)}>{sub.label}</Link>
+                                {(childItems.length ? childItems : [{ label: sub.label }]).slice(0, 10).map((child) => (
+                                  <Link key={`mega-${sub.label}-${child.label}`} href={`/?menu=${encodeURIComponent(item.label)}&sub=${encodeURIComponent(sub.label)}${childItems.length ? `&child=${encodeURIComponent(child.label)}` : ""}`} className="header-mega-category" onClick={() => setOpenDrop(null)}>{child.label}</Link>
+                                ))}
+                              </section>
+                            );
+                          })}
+                        </div>
+                        <section className="header-mega-arrivals">
+                          <h3 style={{ color: menuAccent }}>New Arrivals</h3>
+                          <div className="header-mega-products">
+                            {menuProducts.map((product) => (
+                              <Link key={`mega-product-${product.id}`} href={`/product/${product.id}`} className="header-mega-product" onClick={() => setOpenDrop(null)}>
+                                <span><Image src={product.image} alt={product.name} fill sizes="120px" className="object-contain" unoptimized /></span>
+                                <p>{product.name}</p>
+                              </Link>
+                            ))}
+                            {menuProducts.length === 0 && <p className="header-mega-loading">Loading products…</p>}
+                          </div>
+                        </section>
+                      </div>
+                      <Link href={`/?menu=${encodeURIComponent(item.label)}`} className="header-mega-all" style={{ color: menuAccent }} onClick={() => setOpenDrop(null)}>View All {item.label} →</Link>
+                    </div>
+                  )}
+
+                  {/* Legacy dropdown retained for mobile data compatibility */}
+                  {false && subItems.length > 0 && openDrop === item.label && (
                     <div
                       className="absolute top-full left-0 bg-white shadow-xl z-50 animate-fadeIn"
                       style={{ minWidth: 200, border: "1px solid #eee", borderTop: `3px solid ${SECONDARY}` }}

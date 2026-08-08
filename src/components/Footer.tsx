@@ -109,6 +109,14 @@ const DEFAULT_CUSTOMER_LINKS = [
   { label: "Forgot Password?", url: "/login" },
   { label: "Contact", url: "/contact" },
 ];
+const DEFAULT_USEFUL_LINKS = [
+  { label: "About us", url: "/page/about-us" },
+  { label: "Terms & Conditions", url: "/page/terms-conditions" },
+  { label: "Privacy Policy", url: "/page/privacy-policy" },
+  { label: "Cancellation & Return Policy", url: "/page/return-policy" },
+  { label: "FAQs", url: "/page/faqs" },
+  { label: "Contact Us", url: "/contact" },
+];
 
 const DEFAULT_FOOTER_SOCIAL_KEYS = new Set([
   "facebookUrl",
@@ -195,6 +203,11 @@ export default function Footer({ settings }: Props) {
     ...(footerConfig.quickLinks || []),
     ...(footerConfig.importantLinks || []),
   ];
+  const usefulLinks = configuredUsefulLinks.length
+    ? configuredUsefulLinks
+    : pages.length
+      ? pages.map((page) => ({ label: page.title || page.name, url: `/page/${page.slug}` }))
+      : DEFAULT_USEFUL_LINKS;
   const customerLinks = footerConfig.customerLinks?.length
     ? footerConfig.customerLinks
     : DEFAULT_CUSTOMER_LINKS;
@@ -226,7 +239,7 @@ export default function Footer({ settings }: Props) {
   if (footerConfig.status === false) return null;
 
   return (
-    <footer className="bg-white mt-4">
+    <footer className="fabrilife-footer mt-4">
       <div
         style={{
           width: "90%",
@@ -272,19 +285,13 @@ export default function Footer({ settings }: Props) {
           )}
 
           {/* Col 2 — Useful Links */}
-          {(configuredUsefulLinks.length > 0 || pages.length > 0) && (
+          {usefulLinks.length > 0 && (
           <div>
             <ColHeading>{footerConfig.quickLinksTitle || "USEFUL LINK"}</ColHeading>
             <ul style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-              {configuredUsefulLinks.length > 0
-                ? configuredUsefulLinks.map((link) => (
+              {usefulLinks.map((link) => (
                   <FooterLink key={`${link.label}-${link.url}`} href={link.url}>
                     {link.label}
-                  </FooterLink>
-                ))
-                : pages.map((page) => (
-                  <FooterLink key={page.Id} href={`/page/${page.slug}`}>
-                    {page.title || page.name}
                   </FooterLink>
                 ))}
             </ul>
@@ -306,7 +313,14 @@ export default function Footer({ settings }: Props) {
           )}
 
           {/* Col 4 — Follow Us + Delivery Partner */}
-          {(socialLinks.length > 0 || deliveryPartners.length > 0) && (
+          <div>
+            <ColHeading>GET SPECIAL DISCOUNTS</ColHeading>
+            <p className="footer-newsletter-copy">Stay updated on our latest arrivals, offers and events.</p>
+            <form className="footer-newsletter" action="#">
+              <input type="email" aria-label="Email for newsletter" placeholder="Enter your email" />
+              <button type="submit">Subscribe</button>
+            </form>
+            {(socialLinks.length > 0 || deliveryPartners.length > 0) && (
           <div>
             {socialLinks.length > 0 && (
               <>
@@ -366,14 +380,14 @@ export default function Footer({ settings }: Props) {
             )}
           </div>
           )}
+          </div>
         </div>
       </div>
 
       {/* Copyright */}
-      {copyright && (
       <div className="bg-black py-3.5 text-center">
         <p style={{ fontSize: 13, color: "#aaa" }}>
-          {copyrightMain}{" "}
+          {copyrightMain || `Copyright © ${new Date().getFullYear()} KAF Lifestyle. All rights reserved.`}{" "}
           {copyrightBrand && (
             <a
               href="#"
@@ -385,7 +399,6 @@ export default function Footer({ settings }: Props) {
           )}
         </p>
       </div>
-      )}
     </footer>
   );
 }

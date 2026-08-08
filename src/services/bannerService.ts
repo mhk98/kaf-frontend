@@ -16,6 +16,7 @@ export interface BannersResult {
   slides: BannerItem[];
   sideBanners: BannerItem[];
   popupBanners: BannerItem[];
+  customBanners: BannerItem[];
 }
 
 function toUrl(file: string): string {
@@ -25,7 +26,7 @@ function toUrl(file: string): string {
 export async function fetchBanners(): Promise<BannersResult> {
   try {
     const res = await fetch(`${BASE}/banners/public`, { next: { revalidate: 60 }, signal: AbortSignal.timeout(15_000) });
-    if (!res.ok) return { slides: [], sideBanners: [], popupBanners: [] };
+    if (!res.ok) return { slides: [], sideBanners: [], popupBanners: [], customBanners: [] };
     const json = await res.json();
     const items: BannerItem[] = unwrapApiList<BannerItem>(json).map((b) => ({
       ...b,
@@ -35,8 +36,9 @@ export async function fetchBanners(): Promise<BannersResult> {
       slides: items.filter((b) => b.type === "slider"),
       sideBanners: items.filter((b) => b.type === "side"),
       popupBanners: items.filter((b) => b.type === "popup"),
+      customBanners: items.filter((b) => b.type === "custom"),
     };
   } catch {
-    return { slides: [], sideBanners: [], popupBanners: [] };
+    return { slides: [], sideBanners: [], popupBanners: [], customBanners: [] };
   }
 }

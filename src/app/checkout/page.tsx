@@ -3,7 +3,7 @@ import { useEffect, useRef, useState, Suspense } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import Footer from "@/components/KafFooter";
 import { useCart } from "@/context/CartContext";
 import { createOrder, saveIncompleteOrder } from "@/services/orderService";
 import { fetchSiteSettings, type SiteSetting } from "@/services/settingService";

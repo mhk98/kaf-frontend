@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import MarqueeBanner from "@/components/MarqueeBanner";
 import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import Footer from "@/components/KafFooter";
 import FloatingContact from "@/components/FloatingContact";
 import ScrollToTop from "@/components/ScrollToTop";
 import ProductDetailClient from "@/components/ProductDetailClient";

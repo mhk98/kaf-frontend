@@ -1,6 +1,6 @@
 import type { NextConfig } from "next";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://server.kaflifestylebd.com";
 
 const nextConfig: NextConfig = {
   async rewrites() {
@@ -29,6 +29,16 @@ const nextConfig: NextConfig = {
         hostname: "localhost",
         port: "5000",
         pathname: "/images/**",
+      },
+      {
+        protocol: "https",
+        hostname: "commons.wikimedia.org",
+        pathname: "/wiki/Special:FilePath/**",
+      },
+      {
+        protocol: "https",
+        hostname: "upload.wikimedia.org",
+        pathname: "/wikipedia/commons/**",
       },
     ],
   },

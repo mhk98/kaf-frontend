@@ -1,7 +1,6 @@
 "use client";
 import { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
-import Container from "./Container";
 import type { BannerItem } from "@/services/bannerService";
 
 interface Props {
@@ -28,13 +27,12 @@ export default function HeroBanner({ slides: slidesProp, sideBanners: sideProp }
   const slide = displaySlides[current] ?? displaySlides[0];
 
   return (
-    <div className="py-3">
-      <Container>
+    <div className="hero-section">
         {/* ── Main wrapper (slider + desktop side banners) ── */}
         <div className="hero-banner-wrapper" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)} onTouchStart={(event) => setTouchStart(event.touches[0]?.clientX ?? null)} onTouchEnd={(event) => { if (touchStart == null || displaySlides.length < 2) return; const delta = event.changedTouches[0].clientX - touchStart; if (Math.abs(delta) > 45) setCurrent((value) => delta > 0 ? (value - 1 + displaySlides.length) % displaySlides.length : (value + 1) % displaySlides.length); setTouchStart(null); }}>
 
           {/* ── Main slider ── */}
-          <div style={{ flex: 1, position: "relative", overflow: "hidden", borderRadius: 6 }}>
+          <div className="hero-slide" style={{ flex: 1, position: "relative", overflow: "hidden" }}>
             {slide.linkUrl ? (
               <a href={slide.linkUrl} target="_blank" rel="noreferrer" style={{ display: "block", width: "100%", height: "100%", position: "relative" }}>
                 <Image src={slide.file} alt={slide.alt} fill style={{ objectFit: "cover", objectPosition: "center" }} unoptimized priority />
@@ -42,12 +40,6 @@ export default function HeroBanner({ slides: slidesProp, sideBanners: sideProp }
             ) : (
               <Image src={slide.file} alt={slide.alt} fill style={{ objectFit: "cover", objectPosition: "center" }} unoptimized priority />
             )}
-
-            <div className="hero-copy">
-              <p>New season essentials</p>
-              <h1>{slide.alt || "Style that feels like you"}</h1>
-              <span>Shop now</span>
-            </div>
 
             {/* Dot indicators */}
             {displaySlides.length > 1 && (
@@ -93,7 +85,7 @@ export default function HeroBanner({ slides: slidesProp, sideBanners: sideProp }
 
           {/* ── Right side banners — desktop only ── */}
           {sideBanners.length > 0 && (
-            <div className="hidden lg:flex flex-col" style={{ width: "35%", flexShrink: 0, gap: 12 }}>
+            <div className="hero-side-banners hidden lg:flex flex-col" style={{ width: "35%", flexShrink: 0, gap: 12 }}>
               {sideBanners.map((b) => (
                 <a
                   key={b.Id}
@@ -120,7 +112,7 @@ export default function HeroBanner({ slides: slidesProp, sideBanners: sideProp }
 
         {/* ── Side banners — mobile only: 2-column row below slider ── */}
         {sideBanners.length > 0 && (
-          <div className="flex lg:hidden gap-3 mt-3">
+          <div className="hero-side-banners flex lg:hidden gap-3 mt-3">
             {sideBanners.map((b) => (
               <a
                 key={b.Id}
@@ -143,7 +135,6 @@ export default function HeroBanner({ slides: slidesProp, sideBanners: sideProp }
             ))}
           </div>
         )}
-      </Container>
     </div>
   );
 }
