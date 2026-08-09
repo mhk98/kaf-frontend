@@ -368,6 +368,14 @@ function HeaderInner({ logoUrl }: HeaderProps) {
               <span>Track</span>
             </Link>
 
+            <Link href="/stores" className="header-action" aria-label="Stores">
+              <svg width={24} height={24} fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1116 0z" />
+                <circle cx="12" cy="10" r="2.5" />
+              </svg>
+              <span>Stores</span>
+            </Link>
+
             {isLoggedIn ? (
               <button onClick={customerLogout} className="header-action" style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }}>
                 <svg width={24} height={24} fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" /></svg>

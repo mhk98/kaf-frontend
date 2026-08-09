@@ -35,7 +35,18 @@ export interface SiteSetting {
   linkedinUrl: string | null;
   tiktokUrl: string | null;
   deliveryPartnerUrl: string | null;
+  storeLocations: StoreLocationSetting[];
   websiteFooter: FooterSetting;
+}
+
+export interface StoreLocationSetting {
+  id?: string | number;
+  name: string;
+  address: string;
+  hotline: string;
+  mapEmbedUrl: string;
+  mapLink?: string;
+  active?: boolean;
 }
 
 type RawSiteSetting = Partial<SiteSetting> & {
@@ -182,6 +193,25 @@ function toFooter(value: unknown): FooterSetting {
   };
 }
 
+function toStoreLocations(value: unknown): StoreLocationSetting[] {
+  if (!Array.isArray(value)) return [];
+  return value
+    .filter((item) => item && typeof item === "object")
+    .map((item, index) => {
+      const store = item as Record<string, unknown>;
+      return {
+        id: typeof store.id === "string" || typeof store.id === "number" ? store.id : index + 1,
+        name: String(store.name || store.title || "").trim(),
+        address: String(store.address || "").trim(),
+        hotline: String(store.hotline || store.phone || "").trim(),
+        mapEmbedUrl: String(store.mapEmbedUrl || store.embedUrl || "").trim(),
+        mapLink: String(store.mapLink || "").trim() || undefined,
+        active: store.active !== false,
+      };
+    })
+    .filter((store) => store.active && store.name && store.address);
+}
+
 export async function fetchSiteSettings(): Promise<SiteSetting> {
   const empty: SiteSetting = {
     logoUrl: null, faviconUrl: null, marqueeText: null,
@@ -195,6 +225,7 @@ export async function fetchSiteSettings(): Promise<SiteSetting> {
     whatsappUrl: null, messengerUrl: null, telegramUrl: null,
     twitterUrl: null, linkedinUrl: null, tiktokUrl: null,
     deliveryPartnerUrl: null,
+    storeLocations: [],
     websiteFooter: {},
   };
   try {
@@ -237,6 +268,7 @@ export async function fetchSiteSettings(): Promise<SiteSetting> {
       linkedinUrl:        d.linkedinUrl        || null,
       tiktokUrl:          d.tiktokUrl          || null,
       deliveryPartnerUrl: toUrl(d.deliveryPartnerFile) || websiteFooter.deliveryPartnerUrl || toUrl(websiteFooter.deliveryPartnerFile),
+      storeLocations:     toStoreLocations(d.storeLocations),
       websiteFooter,
     };
   } catch {

@@ -613,7 +613,7 @@ body {
   width: min(calc(100% - 48px), 1280px);
   margin: 0 auto;
   min-height: 80px;
-  grid-template-columns: 17% 38% 23% 22%;
+  grid-template-columns: 17% 38% 19% 26%;
   align-items: center;
 }
 .site-header { box-shadow: 0 3px 12px rgba(15,23,42,.10); }
@@ -623,7 +623,7 @@ body {
 .desktop-search-button { width: 46px; height: 100%; display: flex; align-items: center; justify-content: center; border: 0; color: #7c8190; background: transparent; cursor: pointer; }
 .desktop-search-input { width: 100%; height: 100%; padding: 0 4px 0 16px; border: 0; outline: 0; background: transparent; color: #222536; font-size: 13px; }
 .desktop-search-input::placeholder { color: #b7bac2; }
-.desktop-actions { grid-column: 4; display: flex; align-items: center; justify-content: flex-end; gap: clamp(14px, 1.8vw, 28px); }
+.desktop-actions { grid-column: 4; display: flex; align-items: center; justify-content: flex-end; gap: clamp(10px, 1.25vw, 20px); }
 .header-action { display: flex; flex-direction: column; align-items: center; gap: 5px; color: #222536; transition: color .2s ease; white-space: nowrap; }
 button.header-action { padding: 0; border: 0; background: transparent; cursor: pointer; }
 .header-action:hover { color: #073763; }
@@ -669,7 +669,7 @@ button.header-action { padding: 0; border: 0; background: transparent; cursor: p
   .main-navigation { left: calc(14px + 16%); width: 35%; }
   .desktop-navigation { gap: 0; }
   .desktop-nav-link { font-size: 10px !important; padding-left: 6px !important; padding-right: 6px !important; }
-  .desktop-actions { gap: 11px; }
+  .desktop-actions { gap: 7px; }
 }
 @media (max-width: 767px) {
   .hero-section { width: 100%; margin-top: 0; }
@@ -690,7 +690,11 @@ button.header-action { padding: 0; border: 0; background: transparent; cursor: p
 @media (max-width: 900px) { .kaf-footer-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); width: calc(100% - 40px); } }
 @media (max-width: 560px) { .kaf-footer-grid { grid-template-columns: 1fr; gap: 34px; width: calc(100% - 30px); padding: 40px 0; }.kaf-footer-logo { width: 180px; height: 82px; }.kaf-footer-heading { font-size: 16px; }.kaf-footer-link { font-size: 14px; } }
 
-.fl-home-shell { width: min(calc(100% - 32px), 1100px); margin: 0 auto; background: #fff; }
+.fl-home-shell {
+  width: min(calc(100% - 32px), 1230px);
+  margin-inline: auto;
+  background: #fff;
+}
 .fl-quick-links { display: grid; grid-template-columns: repeat(4, 1fr) 2.35fr; width: 100vw; min-height: 50px; margin-left: calc(50% - 50vw); background: #f3f3f3; }
 .fl-quick-links > a { display: flex; align-items: center; justify-content: center; padding: 10px 8px; color: #272a35; font-size: 13px; font-weight: 500; text-transform: uppercase; border-right: 1px solid #fff; }
 .fl-app-links { display: flex; align-items: center; justify-content: center; gap: 14px; padding: 5px 14px; color: #161820; text-transform: uppercase; }
@@ -702,8 +706,22 @@ button.header-action { padding: 0; border: 0; background: transparent; cursor: p
 .fl-new-arrival { width: 100%; margin: 0 auto 14px; }
 .fl-new-arrival h1 { margin-bottom: 12px; padding: 20px; background: #fff7e9; color: #d48806; text-align: center; font-size: clamp(24px, 3vw, 36px); font-weight: 500; text-transform: uppercase; }
 .fl-new-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; }
+.fl-top-selling { margin: 18px 0; }
+.fl-top-selling-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin: 16px 0;
+}
+.fl-top-selling .fl-product-price { transform: translateY(0); }
 .fl-product { position: relative; display: block; min-width: 0; overflow: hidden; background: #eef1f3; }
 .fl-product-image { position: relative; width: 100%; aspect-ratio: 1 / 1; }
+.fl-product-image img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center;
+}
 .fl-product-price { position: absolute; right: 0; bottom: 0; left: 0; display: flex; align-items: center; justify-content: center; gap: 5px; min-height: 24px; padding: 3px; background: rgba(255,255,255,.93); color: #111; font-size: 10px; transform: translateY(100%); transition: transform .2s ease; }
 .fl-product:hover .fl-product-price, .fl-editorial-products .fl-product-price { transform: translateY(0); }
 .fl-product-price del { color: #979797; font-size: 9px; }
@@ -739,10 +757,11 @@ button.header-action { padding: 0; border: 0; background: transparent; cursor: p
 .fl-partner-grid { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 20px 28px; }.fl-partner-grid a { display: flex; width: 110px; height: 65px; padding: 7px; align-items: center; justify-content: center; background: #fff; }.fl-partner-grid img { width: 100%; height: 100%; object-fit: contain; }
 .fl-affiliate-banner { position: relative; display: block; min-height: 230px; margin-bottom: 18px; overflow: hidden; background: #d5f8f2; }
 @media (max-width: 800px) {
-  .fl-home-shell { width: 100%; padding: 0 12px; }
+  .fl-home-shell { width: 100%; padding-inline: clamp(8px, 2.5vw, 16px); }
   .fl-quick-links { grid-template-columns: repeat(4, 1fr); overflow-x: auto; }.fl-quick-links > a { min-width: 100px; font-size: 10px; }.fl-app-links { grid-column: 1 / -1; min-width: 430px; }
   .fl-announcement, .fl-new-arrival { width: 100%; }
   .fl-new-grid { grid-template-columns: repeat(3, 1fr); gap: 7px; }
+  .fl-top-selling-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
   .fl-promo-grid { grid-template-columns: 1fr; }.fl-promo-card { min-height: 180px; }
   .fl-category-mosaic { grid-template-columns: repeat(2, 1fr); gap: 8px; }.fl-category-tile { min-height: 230px; }
   .fl-feature-trio { grid-template-columns: 1fr; }.fl-feature-card { min-height: 300px; }.fl-feature-trio.compact { grid-template-columns: repeat(3, 1fr); }.fl-feature-trio.compact .fl-product { min-height: 0; }
@@ -753,7 +772,8 @@ button.header-action { padding: 0; border: 0; background: transparent; cursor: p
   .fl-editorial-cover { min-height: 360px; }.fl-editorial-products { grid-template-columns: repeat(3, 1fr); gap: 7px; }.fl-editorial-products .fl-product { min-height: 0; }
 }
 @media (max-width: 480px) {
-  .fl-new-grid, .fl-editorial-products { grid-template-columns: repeat(2, 1fr); }
+  .fl-home-shell { padding-inline: 8px; }
+  .fl-new-grid, .fl-top-selling-grid, .fl-editorial-products { grid-template-columns: repeat(2, 1fr); }
   .fl-category-tile { min-height: 190px; }.fl-editorial-cover { min-height: 300px; }
 }
 .fabrilife-footer { background: #57585a; color: #fff; }

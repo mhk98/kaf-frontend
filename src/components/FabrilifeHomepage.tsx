@@ -33,7 +33,14 @@ function ProductTile({ product, large = false }: { product: Product; large?: boo
   return (
     <Link href={`/product/${product.id}`} className={`fl-product group ${large ? "fl-product-large" : ""}`}>
       <div className="fl-product-image">
-        <Image src={product.image} alt={product.name} fill sizes={large ? "33vw" : "16vw"} className="object-contain transition-transform duration-300 group-hover:scale-[1.035]" unoptimized />
+        <Image
+          src={product.image}
+          alt={product.name}
+          fill
+          sizes={large ? "33vw" : "16vw"}
+          className="h-full w-full object-cover object-center transition-transform duration-300 group-hover:scale-[1.035]"
+          unoptimized
+        />
       </div>
       <div className="fl-product-price">
         <strong>৳ {product.discountedPrice.toLocaleString("en-US")}</strong>
@@ -71,6 +78,10 @@ export default function FabrilifeHomepage({ products, categories, banners, setti
     || categories.map((category) => ({ category, products: products.filter((product) => product.category?.toLowerCase() === category.label.toLowerCase()) })).find((group) => pattern.test(group.category.label));
   const lowerGroups = [/kids/i, /free delivery/i, /women/i, /sports/i, /accessories/i].map(groupFor).filter((group): group is NonNullable<typeof group> => Boolean(group?.products.length));
   const accessoryProducts = products.filter((product) => /accessories|free delivery|panjabi/i.test(product.category || "")).slice(0, 3);
+  const topSellingProducts = [
+    ...products.filter((product) => product.bestDeals),
+    ...products.filter((product) => !product.bestDeals),
+  ].slice(0, 12);
   const bulkBanner = wideBanners.find((banner) => /bulk/i.test(banner.category || ""));
   const affiliateBanner = wideBanners.find((banner) => /affiliate|app/i.test(banner.category || ""));
 
@@ -92,6 +103,29 @@ export default function FabrilifeHomepage({ products, categories, banners, setti
         <h1>New Arrival</h1>
         <div className="fl-new-grid">{products.slice(0, 30).map((product) => <ProductTile key={product.id} product={product} />)}</div>
       </section>
+
+      {topSellingProducts.length > 0 && (
+        <section className="fl-top-selling" aria-labelledby="top-selling-title">
+          <header className="mb-4 flex flex-col items-center bg-white px-4 py-9 text-center md:mb-5 md:py-12">
+            <p className="mb-2.5 text-[10px] font-bold uppercase tracking-[0.26em] text-[#b9780d] md:text-[11px]">
+              Customer Favorites
+            </p>
+            <h2
+              id="top-selling-title"
+              className="text-[26px] font-semibold leading-tight tracking-[-0.025em] text-[#18201d] md:text-[32px]"
+            >
+              Top Selling Products
+            </h2>
+            <p className="mt-2.5 max-w-xl text-xs leading-5 text-[#6f7672] md:text-sm">
+              Discover the styles our customers love most.
+            </p>
+            <span className="mt-4 block h-0.5 w-11 bg-[#d69a32]" aria-hidden="true" />
+          </header>
+          <div className="fl-top-selling-grid grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4 lg:gap-3">
+            {topSellingProducts.map((product) => <ProductTile key={`top-selling-${product.id}`} product={product} />)}
+          </div>
+        </section>
+      )}
 
       {promos.length > 0 && (
         <section className="fl-promo-grid">
