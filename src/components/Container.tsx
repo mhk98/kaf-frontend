@@ -6,7 +6,13 @@ export default function Container({
   className?: string;
 }) {
   return (
-    <div style={{ width: "90%", margin: "0 auto" }} className={className}>
+    <div
+      style={{
+        width: "min(calc(100% - var(--site-gutter, clamp(24px, 3.2vw, 56px))), var(--site-max, 1520px))",
+        margin: "0 auto",
+      }}
+      className={className}
+    >
       {children}
     </div>
   );

@@ -318,7 +318,7 @@ function CheckoutContent() {
       <Header />
 
       <main style={{ flex: 1, padding: "36px 0 48px" }}>
-        <div style={{ width: "92%", maxWidth: 1300, margin: "0 auto" }}>
+        <div className="site-page-container">
           <div className="checkout-main-grid">
 
             {/* ── Left: Form ── */}
