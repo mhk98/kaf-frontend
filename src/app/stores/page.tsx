@@ -19,17 +19,17 @@ export default async function StoresPage() {
   return (
     <div className="min-h-screen bg-[#f6f7f8]">
       <Header logoUrl={settings.logoUrl} />
-      <main className="site-page-container py-10 md:py-16">
-        <header className="mb-9 text-center">
+      <main className="stores-page-container py-8 sm:py-10 md:py-16">
+        <header className="mb-7 px-2 text-center sm:mb-9">
           <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-[#b9780d]">Visit KAF</p>
           <h1 className="mt-2 text-3xl font-semibold tracking-[-0.03em] text-[#18201d] md:text-4xl">Our Stores</h1>
           <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-[#6f7672]">Find your nearest KAF outlet, contact the store, and get directions.</p>
         </header>
 
-        <div className="space-y-7">
+        <div className="stores-list space-y-4 sm:space-y-6 lg:space-y-7">
           {stores.map((store, index) => (
-            <article key={store.id || `${store.name}-${index}`} className="overflow-hidden rounded-2xl border border-[#e4e6e5] bg-white shadow-[0_8px_30px_rgba(15,23,42,0.06)]">
-              <div className="p-5 md:p-7">
+            <article key={store.id || `${store.name}-${index}`} className="overflow-hidden rounded-xl border border-[#e4e6e5] bg-white shadow-[0_8px_30px_rgba(15,23,42,0.06)] sm:rounded-2xl">
+              <div className="p-4 sm:p-5 md:p-7">
                 <div className="flex items-start gap-3">
                   <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#f4ac35] font-bold text-white" aria-hidden="true">i</span>
                   <div>
@@ -39,7 +39,7 @@ export default async function StoresPage() {
                   </div>
                 </div>
               </div>
-              <div className="relative h-[300px] border-t border-[#e7e9e8] md:h-[390px]">
+              <div className="relative h-[240px] border-t border-[#e7e9e8] sm:h-[300px] md:h-[390px]">
                 <iframe src={mapEmbedFor(store)} title={`${store.name} map`} className="h-full w-full border-0" loading="lazy" referrerPolicy="no-referrer-when-downgrade" allowFullScreen />
                 {store.mapLink && <a href={store.mapLink} target="_blank" rel="noopener noreferrer" className="absolute right-4 top-4 rounded-lg bg-white px-4 py-2 text-xs font-bold text-[#073763] shadow-lg">Open in Maps</a>}
               </div>

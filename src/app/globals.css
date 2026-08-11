@@ -29,6 +29,15 @@ body {
   width: min(calc(100% - var(--site-gutter)), var(--site-max));
   margin-inline: auto;
 }
+.stores-page-container {
+  width: min(calc(100% - clamp(16px, 2.6vw, 40px)), var(--site-max));
+  margin-inline: auto;
+}
+.stores-list {
+  width: 100%;
+  max-width: 1120px;
+  margin-inline: auto;
+}
 @media (max-width: 767px) {
   :root {
     --site-gutter: 24px;
@@ -1499,27 +1508,28 @@ button.header-action {
 }
 .kaf-footer-socials {
   display: flex;
-  flex-wrap: wrap;
-  gap: 9px;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 14px;
   margin-bottom: 28px;
 }
 .kaf-footer-socials a {
   display: grid;
-  width: 42px;
-  height: 42px;
+  width: 28px;
+  height: 32px;
+  flex: 0 0 28px;
   place-items: center;
-  border: 1px solid #b9b9b9;
-  border-radius: 50%;
-  background: #101111;
-  font-size: 20px;
-  font-weight: 900;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #fff !important;
   transition:
     transform 0.18s,
-    border-color 0.18s;
+    opacity 0.18s;
 }
 .kaf-footer-socials a:hover {
   transform: translateY(-2px);
-  border-color: #eebc43;
+  opacity: 0.75;
 }
 .kaf-facebook-card {
   display: flex;
@@ -1873,8 +1883,18 @@ button.header-action {
 }
 .fl-editorial-products {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(155px, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: clamp(8px, 0.8vw, 13px);
+}
+.kaf-footer-socials svg,
+.kaf-facebook-card i svg {
+  width: 22px;
+  height: 22px;
+  fill: currentColor;
+}
+.kaf-footer-socials svg {
+  width: 26px;
+  height: 26px;
 }
 .fl-editorial-products .fl-product {
   min-height: 0;
