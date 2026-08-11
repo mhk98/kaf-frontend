@@ -19,7 +19,7 @@ export default async function StoresPage() {
   return (
     <div className="min-h-screen bg-[#f6f7f8]">
       <Header logoUrl={settings.logoUrl} />
-      <main className="mx-auto w-[min(calc(100%-32px),1120px)] py-10 md:py-16">
+      <main className="mx-auto py-10 md:py-16" style={{ width: "min(calc(100% - 32px), 1120px)" }}>
         <header className="mb-9 text-center">
           <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-[#b9780d]">Visit KAF</p>
           <h1 className="mt-2 text-3xl font-semibold tracking-[-0.03em] text-[#18201d] md:text-4xl">Our Stores</h1>
