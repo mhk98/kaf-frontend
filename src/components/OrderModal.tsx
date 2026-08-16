@@ -32,7 +32,7 @@ export default function OrderModal({ product, onClose, mode = "order" }: OrderMo
       "InitiateCheckout",
       { content_ids: [product.id], content_name: product.name, content_type: "product",
         value: product.discountedPrice * qty, currency: "BDT", num_items: qty },
-      customer ? { customerId: customer.Id, name: customer.name, phone: customer.phone } : undefined
+      customer ? { customerId: customer.Id, name: customer.name, phone: customer.phone || undefined } : undefined
     );
     addToCart(product, qty, selectedSize || undefined, selectedColor || undefined);
     onClose();
@@ -46,7 +46,7 @@ export default function OrderModal({ product, onClose, mode = "order" }: OrderMo
       "AddToCart",
       { content_ids: [product.id], content_name: product.name, content_type: "product",
         value: product.discountedPrice * qty, currency: "BDT", num_items: qty },
-      customer ? { customerId: customer.Id, name: customer.name, phone: customer.phone } : undefined,
+      customer ? { customerId: customer.Id, name: customer.name, phone: customer.phone || undefined } : undefined,
     );
     onClose();
   };

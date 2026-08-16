@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { Fragment } from "react";
 import type { Product } from "@/data/products";
 import type { BannerItem } from "@/services/bannerService";
 import type { CategoryMenuItem } from "@/services/menuService";
@@ -12,6 +13,25 @@ interface Props {
   banners: BannerItem[];
   settings: Partial<SiteSetting>;
   brands: BrandItem[];
+}
+
+const sectionAccents = ["#173b63", "#9a4f62", "#4f6b45", "#9a6a2f", "#4f4b78", "#246b70"];
+
+function CategorySectionHeader({ category, productCount, index }: { category: CategoryMenuItem; productCount: number; index: number }) {
+  const accent = sectionAccents[index % sectionAccents.length];
+  return (
+    <header className="fl-category-section-header" style={{ borderColor: accent }}>
+      <span className="fl-category-section-index" style={{ color: accent }}>{String(index + 1).padStart(2, "0")}</span>
+      <div className="fl-category-section-copy">
+        <small style={{ color: accent }}>Shop the collection</small>
+        <h2>{category.label}</h2>
+        <p>{productCount} products in this collection</p>
+      </div>
+      <Link href={`/?menu=${encodeURIComponent(category.label)}`} className="fl-category-section-link" style={{ color: accent, borderColor: `${accent}55` }}>
+        View collection <span aria-hidden="true">→</span>
+      </Link>
+    </header>
+  );
 }
 
 const originalPartnerLogos = [
@@ -70,14 +90,15 @@ export default function FabrilifeHomepage({ products, categories, banners, setti
   const promos = banners.filter((banner) => /home promo/i.test(banner.category || ""));
   const stories = banners.filter((banner) => /home story/i.test(banner.category || ""));
   const wideBanners = banners.filter((banner) => /home (app|affiliate|bulk)/i.test(banner.category || ""));
-  const grouped = categories.slice(0, 8).map((category) => ({
+  const categoryGroups = categories.map((category) => ({
     category,
     products: products.filter((product) => product.category?.toLowerCase() === category.label.toLowerCase()),
-  })).filter((group) => group.products.length > 0);
-  const groupFor = (pattern: RegExp) => grouped.find((group) => pattern.test(group.category.label))
-    || categories.map((category) => ({ category, products: products.filter((product) => product.category?.toLowerCase() === category.label.toLowerCase()) })).find((group) => pattern.test(group.category.label));
-  const lowerGroups = [/kids/i, /free delivery/i, /women/i, /sports/i, /accessories/i].map(groupFor).filter((group): group is NonNullable<typeof group> => Boolean(group?.products.length));
-  const accessoryProducts = products.filter((product) => /accessories|free delivery|panjabi/i.test(product.category || "")).slice(0, 3);
+  }));
+  const categoryBatches = Array.from(
+    { length: Math.ceil(categoryGroups.length / 6) },
+    (_, index) => categoryGroups.slice(index * 6, index * 6 + 6),
+  );
+  const lowerGroups: typeof categoryGroups = [];
   const topSellingProducts = [
     ...products.filter((product) => product.bestDeals),
     ...products.filter((product) => !product.bestDeals),
@@ -138,10 +159,10 @@ export default function FabrilifeHomepage({ products, categories, banners, setti
       )}
 
       <section className="fl-category-mosaic">
-        {categories.slice(0, 6).map((category) => category.imageUrl && (
-          <Link key={category.Id} href={`/?menu=${encodeURIComponent(category.label)}`} className="fl-category-tile group">
-            <Image src={category.imageUrl} alt={category.label} fill sizes="33vw" className="object-cover transition-transform duration-500 group-hover:scale-105" unoptimized />
-            <span>{category.label}</span>
+        {categoryBatches[0]?.map((group) => group.category.imageUrl && (
+          <Link key={group.category.Id} href={`/?menu=${encodeURIComponent(group.category.label)}`} className="fl-category-tile group">
+            <Image src={group.category.imageUrl} alt={group.category.label} fill sizes="33vw" className="object-cover transition-transform duration-500 group-hover:scale-105" unoptimized />
+            <span>{group.category.label}</span>
           </Link>
         ))}
       </section>
@@ -151,18 +172,33 @@ export default function FabrilifeHomepage({ products, categories, banners, setti
         {stories[0] && <div className="fl-story-image"><Image src={stories[0].file} alt={stories[0].alt} fill sizes="35vw" className="object-cover" unoptimized /></div>}
       </section>
 
-      {grouped.map((group, index) => <EditorialGroup key={group.category.Id} category={group.category} products={group.products} reverse={index % 2 === 1} />)}
+      {categoryBatches[0]?.filter((group) => group.products.length > 0).map((group, index) => (
+        <section key={group.category.Id} className="fl-category-section">
+          <CategorySectionHeader category={group.category} productCount={group.products.length} index={index} />
+          <EditorialGroup category={group.category} products={group.products} reverse={index % 2 === 1} />
+        </section>
+      ))}
+
+      {categoryBatches.slice(1).map((batch, batchIndex) => (
+        <Fragment key={`category-batch-${batchIndex + 1}`}>
+          <section className="fl-category-mosaic">
+            {batch.map((group) => group.category.imageUrl && (
+              <Link key={group.category.Id} href={`/?menu=${encodeURIComponent(group.category.label)}`} className="fl-category-tile group">
+                <Image src={group.category.imageUrl} alt={group.category.label} fill sizes="33vw" className="object-cover transition-transform duration-500 group-hover:scale-105" unoptimized />
+                <span>{group.category.label}</span>
+              </Link>
+            ))}
+          </section>
+          {batch.filter((group) => group.products.length > 0).map((group, index) => (
+            <section key={group.category.Id} className="fl-category-section">
+              <CategorySectionHeader category={group.category} productCount={group.products.length} index={(batchIndex + 1) * 6 + index} />
+              <EditorialGroup category={group.category} products={group.products} reverse={index % 2 === 1} />
+            </section>
+          ))}
+        </Fragment>
+      ))}
 
       <section id="lower-showcase" className="fl-lower-home">
-        <div className="fl-feature-trio">
-          {accessoryProducts.map((product) => (
-            <Link key={product.id} href={`/product/${product.id}`} className="fl-feature-card">
-              <Image src={product.image} alt={product.name} fill sizes="33vw" className="object-cover" unoptimized />
-              <span>{product.category || product.name}</span>
-            </Link>
-          ))}
-        </div>
-
         {lowerGroups.map((group, index) => (
           <div key={`lower-${group.category.Id}`}>
             <EditorialGroup category={group.category} products={group.products} reverse={index % 2 === 1} />

@@ -3,6 +3,7 @@ import { Lato } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/context/CartContext";
 import { CustomerProvider } from "@/context/CustomerContext";
+import { WishlistProvider } from "@/context/WishlistContext";
 import MetaPixel from "@/components/MetaPixel";
 import VisitorTracker from "@/components/VisitorTracker";
 import { fetchSiteSettings } from "@/services/settingService";
@@ -14,7 +15,7 @@ const lato = Lato({
 });
 
 const baseMetadata: Metadata = {
-  title: "Kafela Mart - Kafela Mart is the best level ecommerce in Bangladesh",
+  title: "Kaf Lifestyle - Kaf Lifestyle is the best level ecommerce in Bangladesh",
   description: "Best level ecommerce in Bangladesh",
   icons: {
     icon: [{ url: "/icon.png", type: "image/png" }],
@@ -49,7 +50,9 @@ export default function RootLayout({
         <MetaPixel />
         <VisitorTracker />
         <CustomerProvider>
-          <CartProvider>{children}</CartProvider>
+          <WishlistProvider>
+            <CartProvider>{children}</CartProvider>
+          </WishlistProvider>
         </CustomerProvider>
       </body>
     </html>

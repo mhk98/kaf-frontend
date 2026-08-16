@@ -20,6 +20,7 @@ interface Order {
   deliveryCharge: number; paymentMethod: string; paymentStatus?: string;
   items: OrderItem[] | string; createdAt: string;
 }
+type OrdersResponse = Order[] | { orders?: Order[] };
 
 const STATUS_COLORS: Record<string, string> = {
   pending: "#c2410c", processing: "#2563eb", shipped: "#7c3aed",
@@ -59,10 +60,13 @@ export default function AccountPage() {
   useEffect(() => {
     if (!isLoggedIn) { router.replace("/login"); return; }
     if (!token) return;
-    apiFetch<ApiResponse<Order[]>>("/customer/orders", {
+    apiFetch<ApiResponse<OrdersResponse>>("/customer/orders", {
       headers: { Authorization: `Bearer ${token}` },
     })
-      .then((r) => setOrders(r.data || []))
+      .then((r) => {
+        const data = r.data;
+        setOrders(Array.isArray(data) ? data : data?.orders || []);
+      })
       .catch(() => setOrders([]))
       .finally(() => setOrdersLoading(false));
   }, [isLoggedIn, token, router]);
@@ -120,7 +124,7 @@ export default function AccountPage() {
               </div>
               <div>
                 <h1 style={{ margin: 0, fontSize: 18, fontWeight: 800, color: "#111" }}>{customer?.name}</h1>
-                <p style={{ margin: "3px 0 0", fontSize: 13, color: "#666" }}>{customer?.phone}</p>
+                <p style={{ margin: "3px 0 0", fontSize: 13, color: "#666" }}>{customer?.phone || customer?.email}</p>
               </div>
             </div>
             <button

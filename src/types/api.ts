@@ -72,6 +72,7 @@ export interface CreateOrderPayload {
   customerName: string;
   customerPhone: string;
   customerAddress: string;
+  customerDistrict?: string;
   paymentMethod: "bkash" | "nagad" | "rocket" | "cod";
   items: ApiOrderItem[];
   subtotal: number;

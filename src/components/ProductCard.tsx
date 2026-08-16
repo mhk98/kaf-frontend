@@ -6,6 +6,7 @@ import { Product } from "@/data/products";
 import OrderModal from "./OrderModal";
 import { useCart } from "@/context/CartContext";
 import { useCustomer } from "@/context/CustomerContext";
+import { useWishlist } from "@/context/WishlistContext";
 import { trackPixelEvent } from "@/lib/pixel";
 
 const PRIMARY   = "#073763";
@@ -16,9 +17,10 @@ export default function ProductCard({ product }: { product: Product }) {
   const [showModal, setShowModal] = useState(false);
   const [modalMode, setModalMode] = useState<"order" | "cart">("order");
   const [added, setAdded] = useState(false);
-  const [wishlisted, setWishlisted] = useState(false);
   const { addToCart } = useCart();
   const { customer } = useCustomer();
+  const { addToWishlist, removeFromWishlist, isWishlisted } = useWishlist();
+  const wishlisted = isWishlisted(product.id);
 
   const pixelProductData = {
     content_ids: [product.id],
@@ -30,7 +32,7 @@ export default function ProductCard({ product }: { product: Product }) {
   };
 
   const pixelUserData = customer
-    ? { customerId: customer.Id, name: customer.name, phone: customer.phone }
+    ? { customerId: customer.Id, name: customer.name, phone: customer.phone || undefined }
     : undefined;
 
   const handleAddToCart = () => {
@@ -53,11 +55,20 @@ export default function ProductCard({ product }: { product: Product }) {
     setShowModal(true);
   };
 
+  const handleWishlist = () => {
+    if (wishlisted) {
+      removeFromWishlist(product.id);
+      return;
+    }
+    addToWishlist(product);
+    trackPixelEvent("AddToWishlist", pixelProductData, pixelUserData);
+  };
+
   return (
     <>
       <div className="bg-white group relative flex h-full flex-col overflow-hidden border border-[#d9d9d9] transition-shadow hover:shadow-md" style={{ borderRadius: 4 }}>
 
-        <button type="button" onClick={() => setWishlisted((value) => !value)} className="product-wishlist" aria-label={`${wishlisted ? "Remove" : "Add"} ${product.name} ${wishlisted ? "from" : "to"} wishlist`} aria-pressed={wishlisted}>
+        <button type="button" onClick={handleWishlist} className="product-wishlist" aria-label={`${wishlisted ? "Remove" : "Add"} ${product.name} ${wishlisted ? "from" : "to"} wishlist`} aria-pressed={wishlisted}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill={wishlisted ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.8"><path d="M20.8 4.6a5.5 5.5 0 00-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 00-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 00-.1-7.8z"/></svg>
         </button>
 

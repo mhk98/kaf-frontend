@@ -28,6 +28,20 @@ interface TrackedOrder {
   advance?: number; items: TrackedOrderItem[] | string; createdAt: string; note?: string;
 }
 
+interface TrackingPagination {
+  page: number; limit: number; total: number; totalPages: number;
+  hasNextPage: boolean; hasPreviousPage: boolean;
+}
+
+interface TrackingResult {
+  orders: TrackedOrder[];
+  pagination: TrackingPagination;
+  searchType: "phone" | "invoice";
+}
+
+const PAGE_LIMIT = 5;
+const PREVIEW_COUNT = 2;
+
 const STATUS_COLORS: Record<string, string> = {
   pending: "#f97316",
   packaging: "#2563eb",
@@ -108,30 +122,56 @@ export default function TrackOrderPage() {
   const [orderStatuses, setOrderStatuses] = useState<OrderStatusOption[]>(() => normalizeOrderStatuses());
   const [loading, setLoading] = useState(false);
   const [error,   setError]   = useState("");
+  const [pagination, setPagination] = useState<TrackingPagination | null>(null);
+  const [searchType, setSearchType] = useState<TrackingResult["searchType"] | null>(null);
+  const [showAll, setShowAll] = useState(false);
+  const [activeQuery, setActiveQuery] = useState("");
 
   useEffect(() => {
     fetchPublicOrderStatuses().then(setOrderStatuses).catch(() => {});
   }, []);
 
-  const track = async () => {
-    const value = trackingValue.trim();
+  const loadOrders = async (value: string, page = 1) => {
     if (!value) { setError("ফোন নম্বর অথবা ইনভয়েস আইডি দিন"); return; }
     const normalized = value.replace(/^#/, "").toUpperCase();
     const isPhone   = /^01\d{9}$/.test(normalized);
-    const isInvoice = /^WZ-[A-Z0-9-]+$/.test(normalized);
+    const isInvoice = /^KAF-[A-Z0-9-]+$/.test(normalized);
     if (!isPhone && !isInvoice) { setError("সঠিক ফোন নম্বর অথবা ইনভয়েস আইডি দিন"); return; }
-    setError(""); setLoading(true); setOrders(null);
+    setError(""); setLoading(true);
     try {
-      const res = await apiFetch<ApiResponse<TrackedOrder[]>>("/orders/track", {
-        params: isInvoice ? { invoiceId: normalized } : { phone: normalized },
+      const res = await apiFetch<ApiResponse<TrackingResult>>("/orders/track", {
+        params: isInvoice
+          ? { invoiceId: normalized }
+          : { phone: normalized, page, limit: PAGE_LIMIT },
       });
-      setOrders(res.data || []);
+      setOrders(res.data?.orders || []);
+      setPagination(res.data?.pagination || null);
+      setSearchType(res.data?.searchType || (isInvoice ? "invoice" : "phone"));
     } catch {
       setError("অর্ডারের তথ্য আনতে সমস্যা হয়েছে। আবার চেষ্টা করুন।");
     } finally {
       setLoading(false);
     }
   };
+
+  const track = () => {
+    const value = trackingValue.trim();
+    setOrders(null);
+    setPagination(null);
+    setSearchType(null);
+    setShowAll(false);
+    setActiveQuery(value);
+    void loadOrders(value, 1);
+  };
+
+  const changePage = (page: number) => {
+    setShowAll(true);
+    void loadOrders(activeQuery, page);
+  };
+
+  const visibleOrders = searchType === "phone" && !showAll
+    ? (orders || []).slice(0, PREVIEW_COUNT)
+    : (orders || []);
 
   return (
     <div className="track-order-page">
@@ -163,7 +203,7 @@ export default function TrackOrderPage() {
                     type="text" value={trackingValue}
                     onChange={(e) => setTrackingValue(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && track()}
-                    placeholder="01700000000 অথবা WZ-20260521-000001"
+                    placeholder="01700000000 অথবা KAF-002"
                     className="track-order-input"
                   />
                 </div>
@@ -213,7 +253,7 @@ export default function TrackOrderPage() {
           {/* Order cards */}
           {orders !== null && orders.length > 0 && (
             <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-              {orders.map((order) => {
+              {visibleOrders.map((order) => {
                 const items = getOrderItems(order.items);
                 return (
                   <div key={order.Id} style={{ background: "#fff", borderRadius: 16, border: "1px solid #e5e7eb", overflow: "hidden", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
@@ -306,6 +346,40 @@ export default function TrackOrderPage() {
                   </div>
                 );
               })}
+
+              {searchType === "phone" && !showAll && pagination && pagination.total > PREVIEW_COUNT && (
+                <button
+                  type="button"
+                  onClick={() => setShowAll(true)}
+                  style={{ alignSelf: "center", border: 0, borderRadius: 10, padding: "12px 28px", background: PRIMARY, color: "#fff", fontSize: 14, fontWeight: 800, cursor: "pointer" }}
+                >
+                  আরও অর্ডার দেখুন ({pagination.total - PREVIEW_COUNT})
+                </button>
+              )}
+
+              {searchType === "phone" && showAll && pagination && pagination.totalPages > 1 && (
+                <nav aria-label="Order result pages" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 12, flexWrap: "wrap" }}>
+                  <button
+                    type="button"
+                    disabled={!pagination.hasPreviousPage || loading}
+                    onClick={() => changePage(pagination.page - 1)}
+                    style={{ border: "1px solid #d1d5db", borderRadius: 8, padding: "9px 16px", background: "#fff", color: "#374151", fontWeight: 700, cursor: pagination.hasPreviousPage ? "pointer" : "not-allowed", opacity: pagination.hasPreviousPage ? 1 : 0.5 }}
+                  >
+                    আগের পৃষ্ঠা
+                  </button>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: "#4b5563" }}>
+                    পৃষ্ঠা {pagination.page} / {pagination.totalPages}
+                  </span>
+                  <button
+                    type="button"
+                    disabled={!pagination.hasNextPage || loading}
+                    onClick={() => changePage(pagination.page + 1)}
+                    style={{ border: "1px solid #d1d5db", borderRadius: 8, padding: "9px 16px", background: "#fff", color: "#374151", fontWeight: 700, cursor: pagination.hasNextPage ? "pointer" : "not-allowed", opacity: pagination.hasNextPage ? 1 : 0.5 }}
+                  >
+                    পরের পৃষ্ঠা
+                  </button>
+                </nav>
+              )}
             </div>
           )}
         </section>

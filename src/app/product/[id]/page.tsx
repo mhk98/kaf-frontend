@@ -122,7 +122,7 @@ export default async function ProductDetailPage({
                         })
                       ) : (
                         <p className="delivery-copy">
-                          • ঢাকার ভিতরে ৮০ টাকা • ঢাকার বাইরে ১২০ টাকা
+                          • ঢাকার ভিতরে ৭০ টাকা • ঢাকার বাইরে ১৩০ টাকা
                         </p>
                       )}
                     </div>
@@ -147,7 +147,7 @@ export default async function ProductDetailPage({
                   <div className="seller-row">
                     <p className="seller-label">Sold by</p>
                     <div className="seller-meta">
-                      <p className="seller-name">Kafela Mart</p>
+                      <p className="seller-name">Kaf Lifestyle</p>
                       {(settings as SiteSetting).whatsappUrl && (
                         <a
                           href={(settings as SiteSetting).whatsappUrl!}

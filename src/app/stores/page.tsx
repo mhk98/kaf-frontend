@@ -39,7 +39,7 @@ export default async function StoresPage() {
                   </div>
                 </div>
               </div>
-              <div className="relative h-[240px] border-t border-[#e7e9e8] sm:h-[300px] md:h-[390px]">
+              <div className="relative mx-auto mb-4 h-[240px] w-[94%] max-w-[900px] overflow-hidden rounded-xl border border-[#e7e9e8] sm:mb-5 sm:h-[300px] sm:w-[90%] md:h-[390px] lg:w-[82%]">
                 <iframe src={mapEmbedFor(store)} title={`${store.name} map`} className="h-full w-full border-0" loading="lazy" referrerPolicy="no-referrer-when-downgrade" allowFullScreen />
                 {store.mapLink && <a href={store.mapLink} target="_blank" rel="noopener noreferrer" className="absolute right-4 top-4 rounded-lg bg-white px-4 py-2 text-xs font-bold text-[#073763] shadow-lg">Open in Maps</a>}
               </div>

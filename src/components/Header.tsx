@@ -9,6 +9,7 @@ import { fetchStorefrontProducts } from "@/services/productService";
 import { fetchSiteSettings } from "@/services/settingService";
 import { useCart } from "@/context/CartContext";
 import { useCustomer } from "@/context/CustomerContext";
+import { useWishlist } from "@/context/WishlistContext";
 import { trackPixelEvent } from "@/lib/pixel";
 
 const PRIMARY   = "#073763";   // logo navy
@@ -16,6 +17,23 @@ const SECONDARY = "#10B8C4";   // logo teal
 
 interface HeaderProps {
   logoUrl?: string | null;
+}
+
+const DEFAULT_NAV_ITEMS: NavItem[] = [
+  { label: "MEN", sub: [] },
+  { label: "WOMEN", sub: [] },
+  { label: "KIDS", sub: [] },
+  { label: "TEENS", sub: [] },
+  { label: "SPORTS", sub: [] },
+];
+
+function LogoFallback() {
+  return (
+    <span aria-label="KAF Lifestyle" style={{ display: "inline-flex", flexDirection: "column", alignItems: "flex-start", color: PRIMARY, lineHeight: 0.82 }}>
+      <strong style={{ fontSize: 35, fontWeight: 900, letterSpacing: "-0.08em" }}>KAF</strong>
+      <small style={{ marginTop: 6, fontSize: 7, fontWeight: 700, letterSpacing: "0.28em" }}>LIFESTYLE</small>
+    </span>
+  );
 }
 
 function applyFavicon(url: string | null) {
@@ -32,7 +50,7 @@ function HeaderInner({ logoUrl }: HeaderProps) {
   const [openDrop,      setOpenDrop]      = useState<string | null>(null);
   const [mobileExpand,  setMobileExpand]  = useState<string | null>(null);
   const [search,        setSearch]        = useState("");
-  const [navItems,      setNavItems]      = useState<NavItem[]>([]);
+  const [navItems,      setNavItems]      = useState<NavItem[]>(DEFAULT_NAV_ITEMS);
   const [resolvedLogo,  setResolvedLogo]  = useState<string | null>(logoUrl || null);
   // Search dropdown
   const [allProducts,   setAllProducts]   = useState<Product[]>([]);
@@ -99,8 +117,10 @@ function HeaderInner({ logoUrl }: HeaderProps) {
     return () => document.removeEventListener("mousedown", close);
   }, []);
   const { items, removeFromCart, totalItems, totalPrice } = useCart();
+  const { totalItems: wishlistTotal } = useWishlist();
   const { isLoggedIn, logout: customerLogout, customer } = useCustomer();
   const [cartOpen, setCartOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
   const cartRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
@@ -119,7 +139,7 @@ function HeaderInner({ logoUrl }: HeaderProps) {
           currency: "BDT",
           num_items: searchResults.length,
         },
-        customer ? { customerId: customer.Id, name: customer.name, phone: customer.phone } : undefined,
+        customer ? { customerId: customer.Id, name: customer.name, phone: customer.phone || undefined } : undefined,
       );
     }, 800);
     return () => window.clearTimeout(timer);
@@ -130,7 +150,7 @@ function HeaderInner({ logoUrl }: HeaderProps) {
       "InitiateCheckout",
       { content_ids: items.map((i) => i.id), content_name: "Cart Checkout",
         content_type: "product", value: totalPrice, currency: "BDT", num_items: totalItems },
-      customer ? { customerId: customer.Id, name: customer.name, phone: customer.phone } : undefined
+      customer ? { customerId: customer.Id, name: customer.name, phone: customer.phone || undefined } : undefined
     );
     setCartOpen(false);
     router.push("/checkout");
@@ -175,8 +195,10 @@ function HeaderInner({ logoUrl }: HeaderProps) {
             {/* Logo — centered */}
             <Link href="/" style={{ flex: 1, display: "flex", justifyContent: "center" }}>
               <div style={{ position: "relative", width: 110, height: 44 }}>
-                {resolvedLogo && (
+                {resolvedLogo ? (
                   <img src={resolvedLogo} alt="Logo" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+                ) : (
+                  <LogoFallback />
                 )}
               </div>
             </Link>
@@ -299,8 +321,10 @@ function HeaderInner({ logoUrl }: HeaderProps) {
           {/* Logo */}
           <Link href="/" className="flex items-center">
             <div className="desktop-logo-box">
-              {resolvedLogo && (
+              {resolvedLogo ? (
                 <img src={resolvedLogo} alt="Logo" style={{ width: "100%", height: "100%", objectFit: "contain", objectPosition: "left center" }} />
+              ) : (
+                <LogoFallback />
               )}
             </div>
           </Link>
@@ -376,20 +400,82 @@ function HeaderInner({ logoUrl }: HeaderProps) {
               <span>Stores</span>
             </Link>
 
-            {isLoggedIn ? (
-              <button onClick={customerLogout} className="header-action" style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }}>
-                <svg width={24} height={24} fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" /></svg>
-                <span>Logout</span>
-              </button>
-            ) : (
-              <Link href="/login" className="header-action">
+            <div
+              className="profile-menu"
+              style={{ position: "relative", alignSelf: "stretch", display: "flex", alignItems: "center" }}
+              onMouseEnter={() => setProfileOpen(true)}
+              onMouseLeave={() => setProfileOpen(false)}
+              onFocusCapture={() => setProfileOpen(true)}
+              onBlurCapture={(event) => {
+                if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+                  setProfileOpen(false);
+                }
+              }}
+            >
+              <Link href={isLoggedIn ? "/account" : "/login"} className="header-action" aria-haspopup="menu">
                 <svg width={24} height={24} fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
                 <span>Profile</span>
               </Link>
-            )}
 
-            <Link href="/?menu=wishlist" className="header-action" aria-label="Wishlist">
-              <svg width={24} height={24} fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 00-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 00-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 00-.1-7.8z" /></svg>
+              <div
+                className="profile-menu-dropdown"
+                role="menu"
+                aria-hidden={!profileOpen}
+                style={{
+                  position: "absolute",
+                  zIndex: 120,
+                  top: "100%",
+                  right: -28,
+                  width: 250,
+                  visibility: profileOpen ? "visible" : "hidden",
+                  transform: profileOpen ? "translateY(0)" : "translateY(8px)",
+                  border: "1px solid #eceef2",
+                  background: "#fff",
+                  boxShadow: "0 14px 34px rgba(15, 23, 42, 0.16)",
+                  opacity: profileOpen ? 1 : 0,
+                  pointerEvents: profileOpen ? "auto" : "none",
+                  transition: "opacity 0.18s ease, transform 0.18s ease, visibility 0.18s ease",
+                }}
+              >
+                <div className="profile-menu-welcome" style={{ padding: "22px 20px", borderBottom: "1px solid #eceef2" }}>
+                  <p style={{ margin: "0 0 10px", color: "#374151", fontSize: 13 }}>Welcome</p>
+                  {isLoggedIn ? (
+                    <Link href="/account" role="menuitem" style={{ color: PRIMARY, fontSize: 13, fontWeight: 800 }}>{customer?.name || "My Account"}</Link>
+                  ) : (
+                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                      <Link href="/login" role="menuitem" style={{ color: PRIMARY, fontSize: 13, fontWeight: 800 }}>Sign in</Link>
+                      <span style={{ color: "#c4c7cf" }}>/</span>
+                      <Link href="/login?mode=register" role="menuitem" style={{ color: PRIMARY, fontSize: 13, fontWeight: 800 }}>Sign up</Link>
+                    </div>
+                  )}
+                </div>
+
+                <div className="profile-menu-links" style={{ padding: "14px 0" }}>
+                  {isLoggedIn && (
+                    <Link href="/account" role="menuitem" style={{ display: "flex", alignItems: "center", gap: 13, padding: "12px 20px", color: "#505666", fontSize: 13 }}>
+                      <span aria-hidden="true">●</span> My Account
+                    </Link>
+                  )}
+                  <Link href="/track-order" role="menuitem" style={{ display: "flex", alignItems: "center", gap: 13, padding: "12px 20px", color: "#505666", fontSize: 13 }}>
+                    <span aria-hidden="true">▣</span> Track Order
+                  </Link>
+                  <Link href="/page/about-us" role="menuitem" style={{ display: "flex", alignItems: "center", gap: 13, padding: "12px 20px", color: "#505666", fontSize: 13 }}>
+                    <span aria-hidden="true">●</span> About Us
+                  </Link>
+                  {isLoggedIn && (
+                    <button type="button" onClick={customerLogout} role="menuitem" style={{ display: "flex", width: "100%", alignItems: "center", gap: 13, padding: "12px 20px", border: 0, background: "transparent", color: "#505666", textAlign: "left", fontSize: 13, cursor: "pointer" }}>
+                      <span aria-hidden="true">↪</span> Logout
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <Link href="/wishlist" className="header-action" aria-label={`Wishlist, ${wishlistTotal} items`}>
+              <div className="relative">
+                <svg width={24} height={24} fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 00-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 00-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 00-.1-7.8z" /></svg>
+                {wishlistTotal > 0 && <span className="absolute -right-2 -top-2 flex h-[18px] min-w-[18px] items-center justify-center rounded-full px-1 text-[10px] font-bold text-white" style={{ background: SECONDARY }}>{wishlistTotal}</span>}
+              </div>
               <span>Wishlist</span>
             </Link>
 

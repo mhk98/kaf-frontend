@@ -16,7 +16,7 @@ type Mode = "login" | "register";
 
 interface LoginResult {
   token: string;
-  customer: { Id: number; name: string; phone: string };
+  customer: { Id: number; name: string; phone: string | null; email: string | null };
 }
 
 export default function CustomerLoginPage() {
@@ -24,7 +24,7 @@ export default function CustomerLoginPage() {
   const { login: customerLogin } = useCustomer();
   const [mode, setMode] = useState<Mode>("login");
   const [fullName, setFullName] = useState("");
-  const [phone, setPhone] = useState("");
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -45,14 +45,16 @@ export default function CustomerLoginPage() {
     setMode(m);
     reset();
     setFullName("");
-    setPhone("");
+    setIdentifier("");
     setPassword("");
   };
 
   const validate = () => {
-    if (mode === "register" && !fullName.trim()) return "Full name দিন";
-    if (!/^01\d{9}$/.test(phone.trim()))
-      return "সঠিক mobile number দিন (01XXXXXXXXX)";
+    const value = identifier.trim();
+    const isPhone = /^01\d{9}$/.test(value);
+    const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+    if (!isPhone && !isEmail)
+      return "সঠিক phone number অথবা email দিন";
     if (password.trim().length < 6) return "Password কমপক্ষে ৬ অক্ষর হতে হবে";
     return "";
   };
@@ -71,7 +73,7 @@ export default function CustomerLoginPage() {
           method: "POST",
           body: JSON.stringify({
             name: fullName.trim(),
-            phone: phone.trim(),
+            identifier: identifier.trim(),
             password,
           }),
         });
@@ -81,7 +83,7 @@ export default function CustomerLoginPage() {
       }
       const res = await apiFetch<ApiResponse<LoginResult>>("/customer/login", {
         method: "POST",
-        body: JSON.stringify({ phone: phone.trim(), password }),
+        body: JSON.stringify({ identifier: identifier.trim(), password }),
       });
       customerLogin(res.data.token, res.data.customer);
       router.push("/");
@@ -154,7 +156,7 @@ export default function CustomerLoginPage() {
             {/* Full Name — register only */}
             {mode === "register" && (
               <Field
-                label="Full Name *"
+                label="Full Name (Optional)"
                 value={fullName}
                 onChange={setFullName}
                 placeholder="Enter your full name"
@@ -162,11 +164,11 @@ export default function CustomerLoginPage() {
             )}
 
             <Field
-              label="Mobile Number *"
-              value={phone}
-              onChange={setPhone}
-              placeholder="Enter your mobile number"
-              type="tel"
+              label="Phone Number or Email *"
+              value={identifier}
+              onChange={setIdentifier}
+              placeholder="Enter phone number or email"
+              type="text"
             />
             <Field
               label="Password *"

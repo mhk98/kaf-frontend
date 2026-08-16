@@ -26,10 +26,18 @@ export interface SiteSetting {
   mapLink: string | null;
   copyrightText: string | null;
   facebookUrl: string | null;
+  facebookFollowers: string | null;
+  facebookFollowing: string | null;
   instagramUrl: string | null;
   youtubeUrl: string | null;
   whatsappUrl: string | null;
   messengerUrl: string | null;
+  floatingContact: {
+    phoneNumber?: string | null;
+    whatsappNumber?: string | null;
+    messengerUrl?: string | null;
+    status?: boolean;
+  } | null;
   telegramUrl: string | null;
   twitterUrl: string | null;
   linkedinUrl: string | null;
@@ -221,10 +229,10 @@ export async function fetchSiteSettings(): Promise<SiteSetting> {
     hotlineNumber: null, hotMail: null, phoneNumber: null,
     address: null, phone: null, email: null, whatsappNumber: null,
     mapLink: null, copyrightText: null,
-    facebookUrl: null, instagramUrl: null, youtubeUrl: null,
+    facebookUrl: null, facebookFollowers: null, facebookFollowing: null, instagramUrl: null, youtubeUrl: null,
     whatsappUrl: null, messengerUrl: null, telegramUrl: null,
     twitterUrl: null, linkedinUrl: null, tiktokUrl: null,
-    deliveryPartnerUrl: null,
+    deliveryPartnerUrl: null, floatingContact: null,
     storeLocations: [],
     websiteFooter: {},
   };
@@ -259,10 +267,13 @@ export async function fetchSiteSettings(): Promise<SiteSetting> {
       mapLink:            d.mapLink            || null,
       copyrightText:      d.copyrightText      || null,
       facebookUrl:        d.facebookUrl        || null,
+      facebookFollowers:  d.facebookFollowers  || null,
+      facebookFollowing:  d.facebookFollowing  || null,
       instagramUrl:       d.instagramUrl       || null,
       youtubeUrl:         d.youtubeUrl         || null,
       whatsappUrl:        d.whatsappUrl        || null,
       messengerUrl:       d.messengerUrl       || null,
+      floatingContact:    d.floatingContact && typeof d.floatingContact === "object" ? d.floatingContact : null,
       telegramUrl:        d.telegramUrl        || null,
       twitterUrl:         d.twitterUrl         || d.xUrl || null,
       linkedinUrl:        d.linkedinUrl        || null,

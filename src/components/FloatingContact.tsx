@@ -6,9 +6,9 @@ import { trackPixelEvent } from "@/lib/pixel";
 const CONTACT_DEFS = [
   {
     key: "phone" as const,
-    label: "Call",
+    label: "Phone Call",
     href: (value: string) => `tel:${value}`,
-    color: "#2db742",
+    color: "#7c3aed",
     icon: (
       <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
         <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.63A2 2 0 012 .98h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/>
@@ -37,22 +37,14 @@ const CONTACT_DEFS = [
       </svg>
     ),
   },
-  {
-    key: "telegramUrl" as const,
-    label: "Telegram",
-    href: (value: string) => value,
-    color: "#229ED9",
-    icon: (
-      <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
-        <path d="M9.78 15.43l-.37 5.2c.53 0 .76-.23 1.04-.5l2.5-2.39 5.18 3.79c.95.52 1.62.25 1.88-.88L23.41 4.7c.35-1.61-.58-2.24-1.5-1.9L1.94 10.5c-1.36.53-1.34 1.28-.23 1.62l5.1 1.59L18.67 6.3c.56-.37 1.07-.17.65.2l-9.54 8.93z" />
-      </svg>
-    ),
-  },
 ];
 
 interface Props {
   settings?: Partial<SiteSetting> | null;
 }
+
+const FALLBACK_PHONE = "01332502911";
+const FALLBACK_MESSENGER_URL = "https://m.me/kaflifestyle";
 
 function trackContact(label: string, value: string) {
   trackPixelEvent("Contact", {
@@ -66,90 +58,75 @@ function trackContact(label: string, value: string) {
 }
 
 export default function FloatingContact({ settings }: Props) {
-  const [open, setOpen] = useState(false);
   const [resolvedSettings, setResolvedSettings] = useState<Partial<SiteSetting> | null>(settings || null);
   const source = settings || resolvedSettings || {};
+  const footerSettings = source.websiteFooter || {};
+  const floatingSettings = source.floatingContact || {};
   const contacts = CONTACT_DEFS
     .map((contact) => {
-      const value = source[contact.key];
+      let value = source[contact.key];
+      if (contact.key === "phone") {
+        value = floatingSettings.phoneNumber || source.phone || source.phoneNumber || source.hotlineNumber || footerSettings.phone || FALLBACK_PHONE;
+      }
+      if (contact.key === "whatsappUrl" && !value) {
+        const configuredWhatsApp = footerSettings.socialLinks?.find((link) =>
+          link.platform?.toLowerCase().includes("whatsapp"),
+        )?.url;
+        const rawNumber = floatingSettings.whatsappNumber || source.whatsappNumber || source.phone || source.phoneNumber ||
+          source.hotlineNumber || footerSettings.phone || FALLBACK_PHONE;
+        const number = rawNumber.replace(/\D/g, "").replace(/^0/, "880");
+        value = configuredWhatsApp || (number ? `https://wa.me/${number}` : null);
+      }
+      if (contact.key === "messengerUrl" && !value) {
+        value = floatingSettings.messengerUrl || footerSettings.socialLinks?.find((link) =>
+          link.platform?.toLowerCase().includes("messenger"),
+        )?.url || FALLBACK_MESSENGER_URL;
+      }
       if (!value) return null;
       return {
         ...contact,
-        label: contact.key === "phone" ? value : contact.label,
         href: contact.href(value),
       };
     })
-    .filter((contact): contact is NonNullable<typeof contact> => Boolean(contact));
+    .filter((contact): contact is NonNullable<typeof contact> => Boolean(contact))
+    .sort((a, b) => {
+      const order = { whatsappUrl: 0, phone: 1, messengerUrl: 2 };
+      return order[a.key] - order[b.key];
+    });
 
   useEffect(() => {
-    if (settings) {
-      setResolvedSettings(settings);
-      return;
-    }
+    if (settings) return;
     fetchSiteSettings().then(setResolvedSettings).catch(() => setResolvedSettings({}));
   }, [settings]);
 
   if (contacts.length === 0) return null;
+  if (floatingSettings.status === false) return null;
 
   return (
-    <div className="fixed bottom-6 right-4 z-[100] flex flex-col items-end gap-2.5">
-
-      {/* Expanded contact options */}
-      {open && (
-        <div className="flex flex-col gap-2.5 items-end animate-fadeIn">
-          {contacts.map((c) => (
-            <a
-              key={c.label}
-              href={c.href}
-              target={c.href.startsWith("http") ? "_blank" : undefined}
-              rel={c.href.startsWith("http") ? "noopener noreferrer" : undefined}
-              onClick={() => trackContact(c.label, c.href)}
-              className="flex items-center gap-2.5 bg-white shadow-md hover:shadow-lg transition-shadow"
-              style={{ borderRadius: 50, padding: "7px 16px 7px 7px", border: "1px solid #eee" }}
-            >
-              {/* Colored icon circle */}
-              <span
-                className="flex items-center justify-center text-white shrink-0"
-                style={{ width: 38, height: 38, borderRadius: "50%", backgroundColor: c.color }}
-              >
-                {c.icon}
-              </span>
-              {/* Label */}
-              <span style={{ fontSize: 13, fontWeight: 600, color: "#333", whiteSpace: "nowrap" }}>
-                {c.label}
-              </span>
-            </a>
-          ))}
-        </div>
-      )}
+    <aside
+      aria-label="Contact options"
+      className="fixed bottom-6 right-3 z-[110] flex flex-col gap-2 rounded-full border border-white/30 bg-slate-950/75 p-1.5 shadow-xl backdrop-blur-sm md:right-4"
+    >
+      {contacts.map((contact) => (
+        <a
+          key={contact.key}
+          href={contact.href}
+          target={contact.href.startsWith("http") ? "_blank" : undefined}
+          rel={contact.href.startsWith("http") ? "noopener noreferrer" : undefined}
+          onClick={() => trackContact(contact.label, contact.href)}
+          aria-label={contact.label}
+          title={contact.label}
+          className="flex h-11 w-11 items-center justify-center rounded-full text-white shadow-md transition-transform hover:scale-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+          style={{ backgroundColor: contact.color }}
+        >
+          {contact.icon}
+        </a>
+      ))}
 
       {/* Close button — red X (shown when open) */}
-      {open && (
-        <button
-          onClick={() => setOpen(false)}
-          className="flex items-center justify-center text-white hover:opacity-90 transition-opacity shadow-lg"
-          style={{ width: 48, height: 48, borderRadius: "50%", backgroundColor: "#073763" }}
-        >
-          <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-            <path d="M18 6L6 18M6 6l12 12"/>
-          </svg>
-        </button>
-      )}
 
       {/* Main phone toggle button — always visible when closed */}
-      {!open && (
-        <button
-          onClick={() => setOpen(true)}
-          className="flex items-center justify-center text-white hover:opacity-90 transition-opacity shadow-xl"
-          style={{ width: 52, height: 52, borderRadius: "50%", backgroundColor: "#073763" }}
-          title="Contact Us"
-        >
-          <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-            <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.63A2 2 0 012 .98h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/>
-          </svg>
-        </button>
-      )}
 
-    </div>
+    </aside>
   );
 }

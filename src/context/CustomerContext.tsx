@@ -1,7 +1,7 @@
 "use client";
 import { createContext, useContext, useState, useEffect, useCallback } from "react";
 
-interface CustomerInfo { Id: number; name: string; phone: string; }
+interface CustomerInfo { Id: number; name: string; phone: string | null; email: string | null; }
 
 interface CustomerContextValue {
   customer: CustomerInfo | null;

@@ -375,7 +375,7 @@ export default function ProductDetailClient({
 
   const pixelUserData = useMemo(
     () => customer
-      ? { customerId: customer.Id, name: customer.name, phone: customer.phone }
+      ? { customerId: customer.Id, name: customer.name, phone: customer.phone || undefined }
       : undefined,
     [customer?.Id, customer?.name, customer?.phone],
   );

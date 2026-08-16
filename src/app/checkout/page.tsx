@@ -17,6 +17,28 @@ import { validateCoupon, type AppliedCoupon } from "@/services/couponService";
 
 const fmt = (v: number) => v.toLocaleString("en-US");
 const DEVICE_ID_KEY = "kafela_device_id";
+const CHECKOUT_PROFILES_KEY = "kaf_checkout_profiles";
+
+interface SavedCheckoutProfile {
+  name: string;
+  address: string;
+  district: string;
+}
+
+function getSavedCheckoutProfiles(): Record<string, SavedCheckoutProfile> {
+  if (typeof window === "undefined") return {};
+  try {
+    return JSON.parse(window.localStorage.getItem(CHECKOUT_PROFILES_KEY) || "{}") as Record<string, SavedCheckoutProfile>;
+  } catch {
+    return {};
+  }
+}
+
+function saveCheckoutProfile(phone: string, profile: SavedCheckoutProfile) {
+  const profiles = getSavedCheckoutProfiles();
+  profiles[phone] = profile;
+  window.localStorage.setItem(CHECKOUT_PROFILES_KEY, JSON.stringify(profiles));
+}
 
 const normalizePhoneNumber = (value: string) =>
   value
@@ -64,9 +86,11 @@ function CheckoutContent() {
   const [success,   setSuccess]   = useState(false);
   const [invoiceId, setInvoiceId] = useState("");
   const [errorMsg,  setErrorMsg]  = useState("");
+  const [previousAddressFound, setPreviousAddressFound] = useState(false);
   const [incompleteOrderId, setIncompleteOrderId] = useState<number | null>(null);
   const [deviceId, setDeviceId] = useState("");
   const leadTrackedOrderIdRef = useRef<number | null>(null);
+  const lastAutoFilledPhoneRef = useRef("");
 
   const allItemsFreeShipping = items.length > 0 && items.every((item) => item.freeShipping === true);
   const regularDeliveryCharge = getDeliveryChargeForDistrict(deliveryCharges, district);
@@ -101,6 +125,31 @@ function CheckoutContent() {
 
   useEffect(() => {
     const normalizedPhone = normalizePhoneNumber(phone);
+    if (!/^01\d{9}$/.test(normalizedPhone)) {
+      lastAutoFilledPhoneRef.current = "";
+      setPreviousAddressFound(false);
+      return;
+    }
+    if (lastAutoFilledPhoneRef.current === normalizedPhone) return;
+
+    const timer = window.setTimeout(() => {
+      const profile = getSavedCheckoutProfiles()[normalizedPhone];
+      lastAutoFilledPhoneRef.current = normalizedPhone;
+      if (!profile) {
+        setPreviousAddressFound(false);
+        return;
+      }
+      setName(profile.name || "");
+      setAddress(profile.address || "");
+      setDistrict(profile.district || "");
+      setPreviousAddressFound(Boolean(profile.address || profile.district));
+    }, 350);
+
+    return () => window.clearTimeout(timer);
+  }, [phone]);
+
+  useEffect(() => {
+    const normalizedPhone = normalizePhoneNumber(phone);
     if (success || items.length === 0 || !/^01\d{9}$/.test(normalizedPhone)) return;
 
     const controller = new AbortController();
@@ -112,6 +161,7 @@ function CheckoutContent() {
           customerName: name.trim() || "Incomplete Customer",
           customerPhone: normalizedPhone,
           customerAddress: address.trim(),
+          customerDistrict: district,
           paymentMethod: payment,
           items: items.map((i) => ({
             id: i.id,
@@ -219,6 +269,7 @@ function CheckoutContent() {
         customerName: name,
         customerPhone: normalizedPhone,
         customerAddress: address,
+        customerDistrict: district,
         paymentMethod: payment,
         items: items.map((i) => ({
           id: i.id,
@@ -238,6 +289,11 @@ function CheckoutContent() {
         tracking: getPixelClickData(),
       });
       setInvoiceId(order.invoiceId || order.orderId || "");
+      saveCheckoutProfile(normalizedPhone, {
+        name: name.trim(),
+        address: address.trim(),
+        district,
+      });
       trackPixelEvent(
         "Purchase",
         { content_ids: items.map((i) => i.id), content_name: "Order Confirmed",
@@ -333,21 +389,6 @@ function CheckoutContent() {
 
               <div style={{ padding: "30px 28px", display: "flex", flexDirection: "column", gap: 20 }}>
 
-                {/* Name */}
-                <div>
-                  <label style={{ fontSize: 14, fontWeight: 600, color: "#333", display: "block", marginBottom: 8 }}>
-                    আপনার নাম <span style={{ color: "#e02020" }}>*</span>
-                  </label>
-                  <div style={fieldWrap}>
-                    <span style={iconBox}>
-                      <svg width="18" height="18" fill="none" stroke="#888" strokeWidth="1.8" viewBox="0 0 24 24">
-                        <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" /><circle cx="12" cy="7" r="4" />
-                      </svg>
-                    </span>
-                    <input type="text" value={name} onChange={(e) => setName(e.target.value)} style={inputStyle} />
-                  </div>
-                </div>
-
                 {/* Phone */}
                 <div>
                   <label style={{ fontSize: 14, fontWeight: 600, color: "#333", display: "block", marginBottom: 8 }}>
@@ -363,7 +404,40 @@ function CheckoutContent() {
                       type="tel" value={phone} onChange={(e) => setPhone(e.target.value)}
                       placeholder="০ দিয়ে শুরু করে ১১ সংখ্যার মোবাইল নম্বর দিন"
                       style={inputStyle}
+                      required
                     />
+                  </div>
+                </div>
+
+                {previousAddressFound && (
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, padding: "11px 14px", border: "1px solid #a7e5e9", borderRadius: 7, background: "#effcfd", color: "#23636a", fontSize: 13 }}>
+                    <span>আগের অর্ডারের তথ্য পূরণ করা হয়েছে। চাইলে এই ঠিকানা পরিবর্তন করতে পারেন।</span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setAddress("");
+                        setDistrict("");
+                        setPreviousAddressFound(false);
+                      }}
+                      style={{ flexShrink: 0, padding: "7px 10px", border: "1px solid #10B8C4", borderRadius: 5, background: "#fff", color: "#087d86", fontSize: 12, fontWeight: 700, cursor: "pointer" }}
+                    >
+                      অন্য ঠিকানা দিন
+                    </button>
+                  </div>
+                )}
+
+                {/* Name */}
+                <div>
+                  <label style={{ fontSize: 14, fontWeight: 600, color: "#333", display: "block", marginBottom: 8 }}>
+                    আপনার নাম <span style={{ color: "#e02020" }}>*</span>
+                  </label>
+                  <div style={fieldWrap}>
+                    <span style={iconBox}>
+                      <svg width="18" height="18" fill="none" stroke="#888" strokeWidth="1.8" viewBox="0 0 24 24">
+                        <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" /><circle cx="12" cy="7" r="4" />
+                      </svg>
+                    </span>
+                    <input type="text" required value={name} onChange={(e) => setName(e.target.value)} style={inputStyle} />
                   </div>
                 </div>
 
