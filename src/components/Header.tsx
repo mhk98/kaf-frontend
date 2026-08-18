@@ -29,7 +29,7 @@ const DEFAULT_NAV_ITEMS: NavItem[] = [
 
 function LogoFallback() {
   return (
-    <span aria-label="KAF Lifestyle" style={{ display: "inline-flex", flexDirection: "column", alignItems: "flex-start", color: PRIMARY, lineHeight: 0.82 }}>
+    <span aria-label="KAF LifeStyle" style={{ display: "inline-flex", flexDirection: "column", alignItems: "flex-start", color: PRIMARY, lineHeight: 0.82 }}>
       <strong style={{ fontSize: 35, fontWeight: 900, letterSpacing: "-0.08em" }}>KAF</strong>
       <small style={{ marginTop: 6, fontSize: 7, fontWeight: 700, letterSpacing: "0.28em" }}>LIFESTYLE</small>
     </span>
@@ -316,9 +316,9 @@ function HeaderInner({ logoUrl }: HeaderProps) {
           </div>
         </div>
 
-        {/* ══ DESKTOP layout (md+): logo | search | icons ══ */}
-        <div className="hidden md:grid header-logo-bar" style={{ gap: 0 }}>
-          {/* Logo */}
+        {/* ══ DESKTOP layout (md+): logo | nav | search | icons ══ */}
+        <div className="hidden md:grid header-logo-bar">
+          {/* 1. Logo */}
           <Link href="/" className="flex items-center">
             <div className="desktop-logo-box">
               {resolvedLogo ? (
@@ -329,12 +329,85 @@ function HeaderInner({ logoUrl }: HeaderProps) {
             </div>
           </Link>
 
-          {/* Search */}
+          {/* 2. Desktop Navigation */}
+          <nav className="desktop-main-nav" ref={navRef}>
+            <ul className="desktop-navigation flex items-center">
+              {navItems.slice(0, 5).map((item) => {
+                const subItems = Array.isArray(item.sub) ? item.sub : [];
+                const isActive = activeMenu.toLowerCase() === item.label.toLowerCase();
+                const menuProducts = allProducts.filter((product) => product.category?.toLowerCase() === item.label.toLowerCase()).slice(0, 6);
+                const itemIndex = navItems.findIndex((navItem) => navItem.label === item.label);
+                const menuAccent = ["#ff5b73", "#f24ca5", "#f97316", "#eab308", "#08a89f"][itemIndex % 5];
+
+                return (
+                  <li
+                    key={item.label}
+                    className="relative"
+                    onMouseEnter={() => {
+                      if (subItems.length === 0) return;
+                      setOpenDrop(item.label);
+                      void loadProducts();
+                    }}
+                    onMouseLeave={() => setOpenDrop(null)}
+                  >
+                    <Link
+                      href={`/?menu=${encodeURIComponent(item.label)}`}
+                      className="desktop-nav-link flex items-center gap-1 uppercase font-semibold whitespace-nowrap transition-colors"
+                      style={{
+                        fontSize: 13,
+                        padding: "30px 6px 27px",
+                        display: "flex",
+                        borderBottom: isActive ? `3px solid ${SECONDARY}` : "3px solid transparent",
+                      }}
+                    >
+                      {item.label}
+                    </Link>
+
+                    {subItems.length > 0 && openDrop === item.label && (
+                      <div className="header-mega-menu animate-fadeIn" style={{ borderTopColor: menuAccent }}>
+                        <div className="header-mega-content">
+                          <div className="header-mega-taxonomy">
+                            {subItems.slice(0, 3).map((sub) => {
+                              const childItems = Array.isArray(sub.childItems) ? sub.childItems : [];
+                              return (
+                                <section key={`mega-${sub.label}`} className="header-mega-column">
+                                  <Link href={`/?menu=${encodeURIComponent(item.label)}&sub=${encodeURIComponent(sub.label)}`} className="header-mega-heading" style={{ color: menuAccent }} onClick={() => setOpenDrop(null)}>{sub.label}</Link>
+                                  {(childItems.length ? childItems : [{ label: sub.label }]).slice(0, 10).map((child) => (
+                                    <Link key={`mega-${sub.label}-${child.label}`} href={`/?menu=${encodeURIComponent(item.label)}&sub=${encodeURIComponent(sub.label)}${childItems.length ? `&child=${encodeURIComponent(child.label)}` : ""}`} className="header-mega-category" onClick={() => setOpenDrop(null)}>{child.label}</Link>
+                                  ))}
+                                </section>
+                              );
+                            })}
+                          </div>
+                          <section className="header-mega-arrivals">
+                            <h3 style={{ color: menuAccent }}>New Arrivals</h3>
+                            <div className="header-mega-products">
+                              {menuProducts.map((product) => (
+                                <Link key={`mega-product-${product.id}`} href={`/product/${product.id}`} className="header-mega-product" onClick={() => setOpenDrop(null)}>
+                                  <span><Image src={product.image} alt={product.name} fill sizes="120px" className="object-contain" unoptimized /></span>
+                                  <p>{product.name}</p>
+                                </Link>
+                              ))}
+                              {menuProducts.length === 0 && <p className="header-mega-loading">Loading products…</p>}
+                            </div>
+                          </section>
+                        </div>
+                        <Link href={`/?menu=${encodeURIComponent(item.label)}`} className="header-mega-all" style={{ color: menuAccent }} onClick={() => setOpenDrop(null)}>View All {item.label} →</Link>
+                      </div>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          </nav>
+
+          {/* 3. Search */}
           <div className="desktop-search" ref={searchRef}>
             <div className="desktop-search-box">
               <button
                 className="desktop-search-button"
                 onClick={() => search.trim() && setSearchOpen((o) => !o)}
+                aria-label="Search"
               >
                 <svg width={18} height={18} fill="none" stroke="currentColor" strokeWidth={1.7} viewBox="0 0 24 24">
                   <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
@@ -383,7 +456,7 @@ function HeaderInner({ logoUrl }: HeaderProps) {
             )}
           </div>
 
-          {/* Right icons */}
+          {/* 4. Right icons */}
           <div className="desktop-actions">
             <Link href="/track-order" className="header-action">
               <svg width={24} height={24} fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
@@ -532,217 +605,75 @@ function HeaderInner({ logoUrl }: HeaderProps) {
 
       </div>
 
-      {/* ── Navigation bar ── */}
-      <nav className="main-navigation" ref={navRef}>
-        <div className="main-navigation-inner">
-
-          {/* Desktop nav — justify-evenly so equal gap between AND at edges */}
-          <ul className="desktop-navigation hidden md:flex items-center">
-            {navItems.slice(0, 5).map((item) => {
+      {/* ── Mobile Navigation Drawer ── */}
+      {mobileOpen && (
+        <nav className="mobile-navigation md:hidden">
+          <div className="mobile-navigation-inner">
+            {navItems.map((item) => {
               const subItems = Array.isArray(item.sub) ? item.sub : [];
-              const isActive = activeMenu.toLowerCase() === item.label.toLowerCase();
-              const menuProducts = allProducts.filter((product) => product.category?.toLowerCase() === item.label.toLowerCase()).slice(0, 6);
-              const itemIndex = navItems.findIndex((navItem) => navItem.label === item.label);
-              const menuAccent = ["#ff5b73", "#f24ca5", "#f97316", "#eab308", "#08a89f"][itemIndex % 5];
+              const isExpanded = mobileExpand === item.label;
 
               return (
-                <li
-                  key={item.label}
-                  className="relative"
-                  onMouseEnter={() => {
-                    if (subItems.length === 0) return;
-                    setOpenDrop(item.label);
-                    void loadProducts();
-                  }}
-                  onMouseLeave={() => setOpenDrop(null)}
-                >
-                  <Link
-                    href={`/?menu=${encodeURIComponent(item.label)}`}
-                    className="desktop-nav-link flex items-center gap-1 uppercase font-semibold whitespace-nowrap transition-colors"
-                    style={{
-                      fontSize: 13,
-                      padding: "30px 10px 27px",
-                      display: "flex",
-                      borderBottom: isActive ? `3px solid ${SECONDARY}` : "3px solid transparent",
+                <div key={item.label}>
+                  <div
+                    className="flex items-center justify-between text-white border-b cursor-pointer"
+                    style={{ fontSize: 14, padding: "12px 16px", borderColor: "rgba(255,255,255,0.2)" }}
+                    onClick={() => {
+                      if (subItems.length > 0) {
+                        setMobileExpand(isExpanded ? null : item.label);
+                      } else {
+                        router.push(`/?menu=${encodeURIComponent(item.label)}`);
+                        setMobileOpen(false);
+                      }
                     }}
                   >
-                    {item.label}
-                  </Link>
-
-                  {subItems.length > 0 && openDrop === item.label && (
-                    <div className="header-mega-menu animate-fadeIn" style={{ borderTopColor: menuAccent }}>
-                      <div className="header-mega-content">
-                        <div className="header-mega-taxonomy">
-                          {subItems.slice(0, 3).map((sub) => {
-                            const childItems = Array.isArray(sub.childItems) ? sub.childItems : [];
-                            return (
-                              <section key={`mega-${sub.label}`} className="header-mega-column">
-                                <Link href={`/?menu=${encodeURIComponent(item.label)}&sub=${encodeURIComponent(sub.label)}`} className="header-mega-heading" style={{ color: menuAccent }} onClick={() => setOpenDrop(null)}>{sub.label}</Link>
-                                {(childItems.length ? childItems : [{ label: sub.label }]).slice(0, 10).map((child) => (
-                                  <Link key={`mega-${sub.label}-${child.label}`} href={`/?menu=${encodeURIComponent(item.label)}&sub=${encodeURIComponent(sub.label)}${childItems.length ? `&child=${encodeURIComponent(child.label)}` : ""}`} className="header-mega-category" onClick={() => setOpenDrop(null)}>{child.label}</Link>
-                                ))}
-                              </section>
-                            );
-                          })}
-                        </div>
-                        <section className="header-mega-arrivals">
-                          <h3 style={{ color: menuAccent }}>New Arrivals</h3>
-                          <div className="header-mega-products">
-                            {menuProducts.map((product) => (
-                              <Link key={`mega-product-${product.id}`} href={`/product/${product.id}`} className="header-mega-product" onClick={() => setOpenDrop(null)}>
-                                <span><Image src={product.image} alt={product.name} fill sizes="120px" className="object-contain" unoptimized /></span>
-                                <p>{product.name}</p>
-                              </Link>
-                            ))}
-                            {menuProducts.length === 0 && <p className="header-mega-loading">Loading products…</p>}
-                          </div>
-                        </section>
-                      </div>
-                      <Link href={`/?menu=${encodeURIComponent(item.label)}`} className="header-mega-all" style={{ color: menuAccent }} onClick={() => setOpenDrop(null)}>View All {item.label} →</Link>
-                    </div>
-                  )}
-
-                  {/* Legacy dropdown retained for mobile data compatibility */}
-                  {false && subItems.length > 0 && openDrop === item.label && (
-                    <div
-                      className="absolute top-full left-0 bg-white shadow-xl z-50 animate-fadeIn"
-                      style={{ minWidth: 200, border: "1px solid #eee", borderTop: `3px solid ${SECONDARY}` }}
+                    <Link
+                      href={`/?menu=${encodeURIComponent(item.label)}`}
+                      className="flex-1 text-white"
+                      onClick={(e) => subItems.length > 0 && e.preventDefault()}
                     >
-                      {subItems.map((sub) => {
-                        const isSubActive =
-                          isActive && activeSub.toLowerCase() === sub.label.toLowerCase();
-                        const childItems = Array.isArray(sub.childItems) ? sub.childItems : [];
-                        return (
-                          <div key={sub.label} className="border-b border-gray-100 last:border-0">
+                      {item.label}
+                    </Link>
+                    {subItems.length > 0 && (
+                      <span className="text-white/60 ml-2">{isExpanded ? "▾" : "›"}</span>
+                    )}
+                  </div>
+
+                  {isExpanded && subItems.length > 0 && (
+                    <div style={{ backgroundColor: "rgba(0,0,0,0.25)" }}>
+                      {subItems.map((sub) => (
+                        <div key={sub.label}>
+                          <Link
+                            href={`/?menu=${encodeURIComponent(item.label)}&sub=${encodeURIComponent(sub.label)}`}
+                            className="flex items-center gap-2 text-white/90 border-b"
+                            style={{ fontSize: 13, padding: "10px 28px", borderColor: "rgba(255,255,255,0.1)" }}
+                            onClick={() => setMobileOpen(false)}
+                          >
+                            <span style={{ color: PRIMARY }}>›</span>
+                            {sub.label}
+                          </Link>
+                          {(sub.childItems || []).map((child) => (
                             <Link
-                              href={`/?menu=${encodeURIComponent(item.label)}&sub=${encodeURIComponent(sub.label)}`}
-                              className="flex items-center gap-2 transition-colors"
-                              style={{
-                                fontSize: 14,
-                                padding: "10px 18px",
-                                backgroundColor: isSubActive && !activeChild ? SECONDARY : "",
-                                color: isSubActive && !activeChild ? "#fff" : "#374151",
-                              }}
-                              onMouseEnter={(e) => {
-                                e.currentTarget.style.backgroundColor = SECONDARY;
-                                e.currentTarget.style.color = "#fff";
-                              }}
-                              onMouseLeave={(e) => {
-                                e.currentTarget.style.backgroundColor = isSubActive && !activeChild ? SECONDARY : "";
-                                e.currentTarget.style.color = isSubActive && !activeChild ? "#fff" : "";
-                              }}
-                            >
-                              <span style={{ color: isSubActive && !activeChild ? "#fff" : PRIMARY, fontSize: 16, lineHeight: 1 }}>›</span>
-                              <span style={{ flex: 1 }}>{sub.label}</span>
-                            </Link>
-
-                            {childItems.map((child) => {
-                              const isChildActive =
-                                isSubActive && activeChild.toLowerCase() === child.label.toLowerCase();
-                              return (
-                                <Link
-                                  key={`${sub.label}-${child.label}`}
-                                  href={`/?menu=${encodeURIComponent(item.label)}&sub=${encodeURIComponent(sub.label)}&child=${encodeURIComponent(child.label)}`}
-                                  className="flex items-center gap-2 transition-colors"
-                                  style={{
-                                    fontSize: 13,
-                                    padding: "8px 18px 8px 34px",
-                                    backgroundColor: isChildActive ? SECONDARY : "#fafafa",
-                                    color: isChildActive ? "#fff" : "#4b5563",
-                                  }}
-                                  onMouseEnter={(e) => {
-                                    e.currentTarget.style.backgroundColor = SECONDARY;
-                                    e.currentTarget.style.color = "#fff";
-                                  }}
-                                  onMouseLeave={(e) => {
-                                    e.currentTarget.style.backgroundColor = isChildActive ? SECONDARY : "#fafafa";
-                                    e.currentTarget.style.color = isChildActive ? "#fff" : "#4b5563";
-                                  }}
-                                >
-                                  <span style={{ color: isChildActive ? "#fff" : PRIMARY, fontSize: 14, lineHeight: 1 }}>›</span>
-                                  {child.label}
-                                </Link>
-                              );
-                            })}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
-                </li>
-              );
-            })}
-          </ul>
-
-          {/* Mobile nav */}
-          {mobileOpen && (
-            <div className="md:hidden">
-              {navItems.map((item) => {
-                const subItems = Array.isArray(item.sub) ? item.sub : [];
-                const isExpanded = mobileExpand === item.label;
-
-                return (
-                  <div key={item.label}>
-                    <div
-                      className="flex items-center justify-between text-white border-b cursor-pointer"
-                      style={{ fontSize: 14, padding: "12px 16px", borderColor: "rgba(255,255,255,0.2)" }}
-                      onClick={() => {
-                        if (subItems.length > 0) {
-                          setMobileExpand(isExpanded ? null : item.label);
-                        } else {
-                          router.push(`/?menu=${encodeURIComponent(item.label)}`);
-                          setMobileOpen(false);
-                        }
-                      }}
-                    >
-                      <Link
-                        href={`/?menu=${encodeURIComponent(item.label)}`}
-                        className="flex-1 text-white"
-                        onClick={(e) => subItems.length > 0 && e.preventDefault()}
-                      >
-                        {item.label}
-                      </Link>
-                      {subItems.length > 0 && (
-                        <span className="text-white/60 ml-2">{isExpanded ? "▾" : "›"}</span>
-                      )}
-                    </div>
-
-                    {isExpanded && subItems.length > 0 && (
-                      <div style={{ backgroundColor: "rgba(0,0,0,0.25)" }}>
-                        {subItems.map((sub) => (
-                          <div key={sub.label}>
-                            <Link
-                              href={`/?menu=${encodeURIComponent(item.label)}&sub=${encodeURIComponent(sub.label)}`}
-                              className="flex items-center gap-2 text-white/90 border-b"
-                              style={{ fontSize: 13, padding: "10px 28px", borderColor: "rgba(255,255,255,0.1)" }}
+                              key={`${sub.label}-${child.label}`}
+                              href={`/?menu=${encodeURIComponent(item.label)}&sub=${encodeURIComponent(sub.label)}&child=${encodeURIComponent(child.label)}`}
+                              className="flex items-center gap-2 text-white/80 border-b"
+                              style={{ fontSize: 12, padding: "9px 28px 9px 46px", borderColor: "rgba(255,255,255,0.08)" }}
                               onClick={() => setMobileOpen(false)}
                             >
                               <span style={{ color: PRIMARY }}>›</span>
-                              {sub.label}
+                              {child.label}
                             </Link>
-                            {(sub.childItems || []).map((child) => (
-                              <Link
-                                key={`${sub.label}-${child.label}`}
-                                href={`/?menu=${encodeURIComponent(item.label)}&sub=${encodeURIComponent(sub.label)}&child=${encodeURIComponent(child.label)}`}
-                                className="flex items-center gap-2 text-white/80 border-b"
-                                style={{ fontSize: 12, padding: "9px 28px 9px 46px", borderColor: "rgba(255,255,255,0.08)" }}
-                                onClick={() => setMobileOpen(false)}
-                              >
-                                <span style={{ color: PRIMARY }}>›</span>
-                                {child.label}
-                              </Link>
-                            ))}
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      </nav>
+                          ))}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </nav>
+      )}
     </header>
   );
 }

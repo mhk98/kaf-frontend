@@ -15,7 +15,7 @@ const lato = Lato({
 });
 
 const baseMetadata: Metadata = {
-  title: "Kaf Lifestyle - Kaf Lifestyle is the best level ecommerce in Bangladesh",
+  title: "KAF LifeStyle - KAF LifeStyle is the best level ecommerce in Bangladesh",
   description: "Best level ecommerce in Bangladesh",
   icons: {
     icon: [{ url: "/icon.png", type: "image/png" }],

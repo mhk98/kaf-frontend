@@ -118,7 +118,7 @@ export default function FabrilifeHomepage({ products, categories, banners, setti
         </div>
       </nav>
 
-      <div className="fl-announcement"><strong>Event T-shirt ›</strong> {settings.marqueeText || "Custom clothing with your brand logo or design? We deliver quality apparel at unbeatable prices."} <b>Click here ●</b></div>
+      {/* <div className="fl-announcement"><strong>Event T-shirt ›</strong> {settings.marqueeText || "Custom clothing with your brand logo or design? We deliver quality apparel at unbeatable prices."} <b>Click here ●</b></div> */}
 
       <section id="collections" className="fl-new-arrival">
         <h1>New Arrival</h1>
@@ -126,23 +126,9 @@ export default function FabrilifeHomepage({ products, categories, banners, setti
       </section>
 
       {topSellingProducts.length > 0 && (
-        <section className="fl-top-selling" aria-labelledby="top-selling-title">
-          <header className="mb-4 flex flex-col items-center bg-white px-4 py-9 text-center md:mb-5 md:py-12">
-            <p className="mb-2.5 text-[10px] font-bold uppercase tracking-[0.26em] text-[#b9780d] md:text-[11px]">
-              Customer Favorites
-            </p>
-            <h2
-              id="top-selling-title"
-              className="text-[26px] font-semibold leading-tight tracking-[-0.025em] text-[#18201d] md:text-[32px]"
-            >
-              Top Selling Products
-            </h2>
-            <p className="mt-2.5 max-w-xl text-xs leading-5 text-[#6f7672] md:text-sm">
-              Discover the styles our customers love most.
-            </p>
-            <span className="mt-4 block h-0.5 w-11 bg-[#d69a32]" aria-hidden="true" />
-          </header>
-          <div className="fl-top-selling-grid grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4 lg:gap-3">
+        <section className="fl-top-selling">
+          <h2>Top Selling Products</h2>
+          <div className="fl-new-grid">
             {topSellingProducts.map((product) => <ProductTile key={`top-selling-${product.id}`} product={product} />)}
           </div>
         </section>
@@ -168,7 +154,7 @@ export default function FabrilifeHomepage({ products, categories, banners, setti
       </section>
 
       <section className="fl-story">
-        <div><h2>{settings.metaTitle || "KAF Lifestyle"} <span>›</span></h2><h3>Because comfort and confidence go hand in hand.</h3><p>{settings.metaDescription || "Thoughtfully selected clothing, dependable quality and comfortable fits made for everyday confidence."}</p></div>
+        <div><h2>{settings.metaTitle || "KAF LifeStyle"} <span>›</span></h2><h3>Because comfort and confidence go hand in hand.</h3><p>{settings.metaDescription || "Thoughtfully selected clothing, dependable quality and comfortable fits made for everyday confidence."}</p></div>
         {stories[0] && <div className="fl-story-image"><Image src={stories[0].file} alt={stories[0].alt} fill sizes="35vw" className="object-cover" unoptimized /></div>}
       </section>
 

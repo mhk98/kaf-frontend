@@ -387,7 +387,7 @@ export default function Footer({ settings }: Props) {
       {/* Copyright */}
       <div className="bg-black py-3.5 text-center">
         <p style={{ fontSize: 13, color: "#aaa" }}>
-          {copyrightMain || `Copyright © ${new Date().getFullYear()} KAF Lifestyle. All rights reserved.`}{" "}
+          {copyrightMain || `Copyright © ${new Date().getFullYear()} KAF LifeStyle. All rights reserved.`}{" "}
           {copyrightBrand && (
             <a
               href="#"
