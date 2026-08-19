@@ -1,6 +1,7 @@
 import Header from "@/components/Header";
 import Footer from "@/components/KafFooter";
 import FloatingContact from "@/components/FloatingContact";
+import StoresView from "./StoresView";
 import { fetchSiteSettings, type StoreLocationSetting } from "@/services/settingService";
 
 const fallbackStores: StoreLocationSetting[] = [
@@ -8,9 +9,6 @@ const fallbackStores: StoreLocationSetting[] = [
   { id: "dhanmondi", name: "Dhanmondi (Dhaka)", address: "Dhanmondi, Dhaka", hotline: "01332502911", mapEmbedUrl: "https://maps.google.com/maps?q=Dhanmondi%20Dhaka&z=15&output=embed", mapLink: "https://maps.google.com/?q=Dhanmondi+Dhaka" },
   { id: "uttara", name: "Uttara (Dhaka)", address: "Uttara, Dhaka", hotline: "01332502911", mapEmbedUrl: "https://maps.google.com/maps?q=Uttara%20Dhaka&z=15&output=embed", mapLink: "https://maps.google.com/?q=Uttara+Dhaka" },
 ];
-
-const mapEmbedFor = (store: StoreLocationSetting) =>
-  store.mapEmbedUrl || `https://maps.google.com/maps?q=${encodeURIComponent(store.address)}&z=15&output=embed`;
 
 export const metadata = {
   title: "Our Stores | KAF LifeStyle",
@@ -24,51 +22,14 @@ export default async function StoresPage() {
   return (
     <div className="min-h-screen bg-[#f6f7f8]">
       <Header logoUrl={settings.logoUrl} />
-      <main className="stores-page-container py-8 sm:py-10 md:py-16">
-        <header className="mb-7 px-2 text-center sm:mb-9">
+      <main className="stores-page-container py-6 sm:py-8">
+        <header className="mb-5 px-2 text-center">
           <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-[#b9780d]">Visit KAF</p>
-          <h1 className="mt-2 text-3xl font-semibold tracking-[-0.03em] text-[#18201d] md:text-4xl">Our Stores</h1>
-          <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-[#6f7672]">Find your nearest KAF outlet, contact the store, and get directions.</p>
+          <h1 className="mt-1 text-2xl font-semibold tracking-[-0.03em] text-[#18201d] md:text-3xl">Our Stores</h1>
+          <p className="mx-auto mt-2 max-w-xl text-xs sm:text-sm leading-5 text-[#6f7672]">Find your nearest KAF outlet, contact the store, and get directions.</p>
         </header>
 
-        <div className="stores-list space-y-6 sm:space-y-8">
-          {stores.map((store, index) => (
-            <article key={store.id || `${store.name}-${index}`} className="overflow-hidden rounded-xl border border-[#e4e6e5] bg-white shadow-[0_8px_30px_rgba(15,23,42,0.06)] sm:rounded-2xl">
-              <div className="p-4 sm:p-5 md:p-7">
-                <div className="flex items-start gap-3">
-                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#f4ac35] font-bold text-white text-base" aria-hidden="true">i</span>
-                  <div>
-                    <h2 className="text-lg font-bold text-[#303634]">{store.name}</h2>
-                    <p className="mt-2 text-sm leading-6 text-[#555d59]"><strong className="text-[#303634]">Address:</strong> {store.address}</p>
-                    {store.hotline && <p className="mt-1 text-sm text-[#555d59]"><strong className="text-[#303634]">Outlet Hotline:</strong> <a className="hover:text-[#073763]" href={`tel:${store.hotline}`}>{store.hotline}</a></p>}
-                  </div>
-                </div>
-              </div>
-
-              {/* Map container with equal height and width (aspect-square) */}
-              <div className="relative mx-auto mb-5 sm:mb-7 w-[92%] max-w-[500px] aspect-square overflow-hidden rounded-xl border border-[#e7e9e8]">
-                <iframe
-                  src={mapEmbedFor(store)}
-                  title={`${store.name} map`}
-                  className="h-full w-full border-0"
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                  allowFullScreen
-                />
-                {store.mapLink && (
-                  <a
-                    href={store.mapLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="absolute right-4 top-4 rounded-lg bg-white px-4 py-2 text-xs font-bold text-[#073763] shadow-lg hover:bg-gray-50 transition-colors"
-                  >
-                    Open in Maps
-                  </a>
-                )}
-              </div>
-            </article>
-          ))}
-        </div>
+        <StoresView stores={stores} />
       </main>
       <Footer settings={settings} />
       <FloatingContact settings={settings} />

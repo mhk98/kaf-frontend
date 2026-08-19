@@ -145,6 +145,32 @@ function HeaderInner({ logoUrl }: HeaderProps) {
     return () => window.clearTimeout(timer);
   }, [customer, search, searchResults]);
 
+  const closeTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  const handleNavMouseEnter = (label: string, hasSub: boolean) => {
+    if (closeTimerRef.current) {
+      clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = null;
+    }
+    if (hasSub) {
+      setOpenDrop(label);
+      void loadProducts();
+    }
+  };
+
+  const handleNavMouseLeave = () => {
+    if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
+    closeTimerRef.current = setTimeout(() => {
+      setOpenDrop(null);
+    }, 220);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
+    };
+  }, []);
+
   const handleCartCheckout = () => {
     trackPixelEvent(
       "InitiateCheckout",
@@ -330,7 +356,7 @@ function HeaderInner({ logoUrl }: HeaderProps) {
           </Link>
 
           {/* 2. Desktop Navigation */}
-          <nav className="desktop-main-nav" ref={navRef}>
+          <nav className="desktop-main-nav relative" ref={navRef}>
             <ul className="desktop-navigation flex items-center">
               {navItems.slice(0, 5).map((item) => {
                 const subItems = Array.isArray(item.sub) ? item.sub : [];
@@ -342,20 +368,15 @@ function HeaderInner({ logoUrl }: HeaderProps) {
                 return (
                   <li
                     key={item.label}
-                    className="relative"
-                    onMouseEnter={() => {
-                      if (subItems.length === 0) return;
-                      setOpenDrop(item.label);
-                      void loadProducts();
-                    }}
-                    onMouseLeave={() => setOpenDrop(null)}
+                    onMouseEnter={() => handleNavMouseEnter(item.label, subItems.length > 0)}
+                    onMouseLeave={handleNavMouseLeave}
                   >
                     <Link
                       href={`/?menu=${encodeURIComponent(item.label)}`}
                       className="desktop-nav-link flex items-center gap-1 uppercase font-semibold whitespace-nowrap transition-colors"
                       style={{
                         fontSize: 13,
-                        padding: "30px 6px 27px",
+                        padding: "30px 10px 27px",
                         display: "flex",
                         borderBottom: isActive ? `3px solid ${SECONDARY}` : "3px solid transparent",
                       }}
@@ -364,7 +385,17 @@ function HeaderInner({ logoUrl }: HeaderProps) {
                     </Link>
 
                     {subItems.length > 0 && openDrop === item.label && (
-                      <div className="header-mega-menu animate-fadeIn" style={{ borderTopColor: menuAccent }}>
+                      <div
+                        className="header-mega-menu animate-fadeIn"
+                        style={{ borderTopColor: menuAccent }}
+                        onMouseEnter={() => {
+                          if (closeTimerRef.current) {
+                            clearTimeout(closeTimerRef.current);
+                            closeTimerRef.current = null;
+                          }
+                        }}
+                        onMouseLeave={handleNavMouseLeave}
+                      >
                         <div className="header-mega-content">
                           <div className="header-mega-taxonomy">
                             {subItems.slice(0, 3).map((sub) => {

@@ -906,7 +906,10 @@ button.header-action {
   box-shadow: 0 14px 34px rgba(15, 23, 42, 0.16);
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s ease;
+  transition:
+    opacity 0.18s ease,
+    transform 0.18s ease,
+    visibility 0.18s ease;
 }
 .profile-menu:hover .profile-menu-dropdown,
 .profile-menu:focus-within .profile-menu-dropdown {
@@ -954,7 +957,9 @@ button.header-action {
   font: inherit;
   font-size: 13px;
   cursor: pointer;
-  transition: color 0.15s ease, background 0.15s ease;
+  transition:
+    color 0.15s ease,
+    background 0.15s ease;
 }
 .profile-menu-links a:hover,
 .profile-menu-links button:hover {
@@ -998,11 +1003,10 @@ button.header-action {
 .header-mega-menu {
   position: absolute;
   z-index: 80;
-  top: 80px;
+  top: 100%;
   left: 0;
-  right: 0;
-  width: min(1080px, calc(100vw - 32px));
-  margin: 0 auto;
+  width: min(1060px, calc(100vw - 32px));
+  margin: 0;
   border-top: 3px solid;
   background: #fff;
   box-shadow: 0 16px 35px rgba(15, 23, 42, 0.18);
@@ -1510,17 +1514,17 @@ button.header-action {
 /* Fabrilife-inspired, admin-driven homepage composition */
 .kaf-footer {
   margin-top: 16px;
-  background: #0c0d0d;
+  background: #58595c;
   color: #e4e4e4;
 }
 .kaf-footer-main {
-  background:
+  /* background:
     radial-gradient(
       circle at 32% 20%,
       rgba(255, 255, 255, 0.035),
       transparent 25%
-    ),
-    linear-gradient(135deg, #0e0f0f, #090a0a);
+    ), */
+  /* linear-gradient(135deg, #0e0f0f, #090a0a); */
 }
 .kaf-footer-grid {
   display: grid;
@@ -1617,7 +1621,9 @@ button.header-action {
   color: #181818;
   border: 1px solid #e1e5eb;
   box-shadow: 0 2px 8px rgb(0 0 0 / 12%);
-  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
 }
 .kaf-facebook-card:hover {
   transform: translateY(-2px);
@@ -1659,6 +1665,20 @@ button.header-action {
   border-radius: 4px;
   background: #555;
 }
+.kaf-footer-bottom {
+  text-align: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  background: #080909;
+  padding: 24px 16px;
+}
+.kaf-footer-bottom-inner {
+  text-align: center;
+  max-width: var(--site-max);
+  margin: 0 auto;
+}
+.kaf-footer-bottom-inner p {
+  text-align: center;
+}
 
 /* Fabrilife Layout Styles */
 .fl-home-shell {
@@ -1686,7 +1706,9 @@ button.header-action {
   font-weight: 700;
   text-transform: uppercase;
   border-right: 1px solid #e0e0e0;
-  transition: background 0.15s, color 0.15s;
+  transition:
+    background 0.15s,
+    color 0.15s;
 }
 .fl-quick-links > a:hover {
   background: #e9e9e9;
@@ -2034,7 +2056,9 @@ button.header-action {
   font-size: 11px;
   font-weight: 800;
   white-space: nowrap;
-  transition: transform 0.18s ease, background 0.18s ease;
+  transition:
+    transform 0.18s ease,
+    background 0.18s ease;
 }
 .fl-category-section-link:hover {
   transform: translateX(3px);
