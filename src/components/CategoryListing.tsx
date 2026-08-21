@@ -12,14 +12,15 @@ interface Props {
   child?: string;
   products: Product[];
   categories: CategoryMenuItem[];
+  initialOffer?: "all" | "deal" | "new" | "top" | "delivery";
 }
 
-export default function CategoryListing({ menu, sub, child, products, categories }: Props) {
+export default function CategoryListing({ menu, sub, child, products, categories, initialOffer = "all" }: Props) {
   const [sort, setSort] = useState("newest");
   const [stockOnly, setStockOnly] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [search, setSearch] = useState("");
-  const [offer, setOffer] = useState<"all" | "deal" | "new" | "top" | "delivery">("all");
+  const [offer, setOffer] = useState<"all" | "deal" | "new" | "top" | "delivery">(initialOffer);
   const currentCategory = categories.find((category) => category.label.toLowerCase() === menu.toLowerCase());
   const categoryProducts = useMemo(() => products.filter((product) => product.category?.toLowerCase() === menu.toLowerCase()), [products, menu]);
 

@@ -21,6 +21,7 @@ export default function ProductCard({ product }: { product: Product }) {
   const { customer } = useCustomer();
   const { addToWishlist, removeFromWishlist, isWishlisted } = useWishlist();
   const wishlisted = isWishlisted(product.id);
+  const savings = Math.max(0, product.originalPrice - product.discountedPrice);
 
   const pixelProductData = {
     content_ids: [product.id],
@@ -127,6 +128,17 @@ export default function ProductCard({ product }: { product: Product }) {
         >
           {product.name}
         </Link>
+
+        {savings > 0 && (
+          <div className="px-2 text-center" style={{ minHeight: 20 }}>
+            <span
+              className="inline-flex items-center font-bold text-white"
+              style={{ background: "#16a34a", borderRadius: 3, padding: "2px 6px", fontSize: 10, lineHeight: "14px" }}
+            >
+              Save ৳{formatPrice(savings)}
+            </span>
+          </div>
+        )}
 
         <div className="mt-1 flex items-center justify-center gap-1.5 px-2">
           <span className="text-gray-400 line-through" style={{ fontSize: 11 }}>

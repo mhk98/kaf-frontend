@@ -87,6 +87,7 @@ function EditorialGroup({ category, products, reverse }: { category: CategoryMen
 }
 
 export default function FabrilifeHomepage({ products, categories, banners, settings, brands }: Props) {
+  const defaultCategory = categories.find((category) => /^men$/i.test(category.label))?.label || categories[0]?.label || products.find((product) => product.category)?.category || "Men";
   const promos = banners.filter((banner) => /home promo/i.test(banner.category || ""));
   const stories = banners.filter((banner) => /home story/i.test(banner.category || ""));
   const wideBanners = banners.filter((banner) => /home (app|affiliate|bulk)/i.test(banner.category || ""));
@@ -109,7 +110,7 @@ export default function FabrilifeHomepage({ products, categories, banners, setti
   return (
     <div className="fl-home-shell">
       <nav className="fl-quick-links" aria-label="Quick shop links">
-        <Link href="#collections">Shop now</Link>
+        <Link href="#new-arrival">Shop now</Link>
         {categories.slice(0, 3).map((category) => <Link key={category.Id} href={`/?menu=${encodeURIComponent(category.label)}`}>{category.label}</Link>)}
         <div className="fl-app-links">
           <span>Get 5% off on app</span>
@@ -120,16 +121,25 @@ export default function FabrilifeHomepage({ products, categories, banners, setti
 
       {/* <div className="fl-announcement"><strong>Event T-shirt ›</strong> {settings.marqueeText || "Custom clothing with your brand logo or design? We deliver quality apparel at unbeatable prices."} <b>Click here ●</b></div> */}
 
-      <section id="collections" className="fl-new-arrival">
-        <h1>New Arrival</h1>
+      <section id="new-arrival" className="fl-new-arrival">
+        <h1><Link href={`/?menu=${encodeURIComponent(defaultCategory)}&offer=new`}>New Arrival</Link></h1>
         <div className="fl-new-grid">{products.slice(0, 30).map((product) => <ProductTile key={product.id} product={product} />)}</div>
       </section>
 
       {topSellingProducts.length > 0 && (
-        <section className="fl-top-selling">
-          <h2>Top Selling Products</h2>
+        <section id="top-selling" className="fl-top-selling">
+          <h2><Link href={`/?menu=${encodeURIComponent(defaultCategory)}&offer=top`}>Top Selling Products</Link></h2>
           <div className="fl-new-grid">
             {topSellingProducts.map((product) => <ProductTile key={`top-selling-${product.id}`} product={product} />)}
+          </div>
+        </section>
+      )}
+
+      {products.some((product) => product.freeShipping) && (
+        <section id="free-delivery" className="fl-top-selling">
+          <h2><Link href={`/?menu=${encodeURIComponent(defaultCategory)}&offer=delivery`}>Free Delivery</Link></h2>
+          <div className="fl-new-grid">
+            {products.filter((product) => product.freeShipping).slice(0, 12).map((product) => <ProductTile key={`free-delivery-${product.id}`} product={product} />)}
           </div>
         </section>
       )}
@@ -137,7 +147,7 @@ export default function FabrilifeHomepage({ products, categories, banners, setti
       {promos.length > 0 && (
         <section className="fl-promo-grid">
           {promos.slice(-2).map((banner) => (
-            <a key={banner.Id} href={banner.linkUrl || "#collections"} className="fl-promo-card">
+            <a key={banner.Id} href={banner.linkUrl || "#new-arrival"} className="fl-promo-card">
               <Image src={banner.file} alt={banner.alt} fill sizes="50vw" className="object-cover" unoptimized />
             </a>
           ))}

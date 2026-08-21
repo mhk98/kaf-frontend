@@ -29,9 +29,9 @@ function groupByCategory(products: Product[]): { title: string; products: Produc
 export default async function Home({
   searchParams,
 }: {
-  searchParams: Promise<{ menu?: string; sub?: string; child?: string }>;
+  searchParams: Promise<{ menu?: string; sub?: string; child?: string; offer?: string }>;
 }) {
-  const { menu, sub, child } = await searchParams;
+  const { menu, sub, child, offer } = await searchParams;
   let allProducts: Product[] = [];
   let settings: Partial<SiteSetting> = {};
   let banners: { slides: BannerItem[]; sideBanners: BannerItem[]; popupBanners: BannerItem[]; customBanners: BannerItem[] } = { slides: [], sideBanners: [], popupBanners: [], customBanners: [] };
@@ -81,6 +81,7 @@ export default async function Home({
   }
 
   const isFiltered = Boolean(menu);
+  const initialOffer = (["deal", "new", "top", "delivery"] as const).find((value) => value === offer) || "all";
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
@@ -90,7 +91,7 @@ export default async function Home({
         {!isFiltered && <PopupBanner banners={banners.popupBanners} />}
         {!isFiltered && <FabrilifeHomepage products={allProducts} categories={categoryMenus} banners={banners.customBanners} settings={settings} brands={brands} />}
 
-        {isFiltered && <CategoryListing menu={menu!} sub={sub} child={child} products={allProducts} categories={categoryMenus} />}
+        {isFiltered && <CategoryListing menu={menu!} sub={sub} child={child} products={allProducts} categories={categoryMenus} initialOffer={initialOffer} />}
 
         {!isFiltered && <ServiceBenefits />}
 

@@ -1385,7 +1385,8 @@ button.header-action {
 .catalog-specials h2 {
   color: #ef526d !important;
 }
-.catalog-specials button {
+.catalog-specials button,
+.catalog-specials a {
   display: block;
   width: 100%;
   padding: 7px 0;
@@ -1395,11 +1396,14 @@ button.header-action {
   text-align: left;
   font-size: 12px;
   cursor: pointer;
+  text-decoration: none;
 }
-.catalog-specials button::first-letter {
+.catalog-specials button::first-letter,
+.catalog-specials a::first-letter {
   color: #ff6a00;
 }
 .catalog-specials button:hover,
+.catalog-specials a:hover,
 .catalog-specials button.active {
   color: #ef526d;
   font-weight: 700;
@@ -1800,6 +1804,12 @@ button.header-action {
   font-weight: 800;
   letter-spacing: 0.05em;
   text-transform: uppercase;
+}
+.fl-new-arrival h1 a,
+.fl-top-selling h2 a {
+  display: block;
+  color: inherit;
+  text-decoration: none;
 }
 .fl-new-grid {
   display: grid;
