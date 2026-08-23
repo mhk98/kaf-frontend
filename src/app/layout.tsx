@@ -7,6 +7,7 @@ import { WishlistProvider } from "@/context/WishlistContext";
 import MetaPixel from "@/components/MetaPixel";
 import VisitorTracker from "@/components/VisitorTracker";
 import { fetchSiteSettings } from "@/services/settingService";
+import { SiteLogoProvider } from "@/context/SiteLogoContext";
 
 const lato = Lato({
   weight: ["300", "400", "700", "900"],
@@ -39,21 +40,25 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const settings = await fetchSiteSettings().catch(() => null);
+
   return (
     <html lang="en" className={lato.className} suppressHydrationWarning>
       <body suppressHydrationWarning>
         <MetaPixel />
         <VisitorTracker />
-        <CustomerProvider>
-          <WishlistProvider>
-            <CartProvider>{children}</CartProvider>
-          </WishlistProvider>
-        </CustomerProvider>
+        <SiteLogoProvider logoUrl={settings?.logoUrl || null}>
+          <CustomerProvider>
+            <WishlistProvider>
+              <CartProvider>{children}</CartProvider>
+            </WishlistProvider>
+          </CustomerProvider>
+        </SiteLogoProvider>
       </body>
     </html>
   );

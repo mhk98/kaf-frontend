@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const API_URL =
-  process.env.NEXT_PUBLIC_API_URL || "https://server.kaflifestylebd.com";
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
 const nextConfig: NextConfig = {
   async rewrites() {

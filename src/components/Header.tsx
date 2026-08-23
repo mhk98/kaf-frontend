@@ -10,6 +10,7 @@ import { fetchSiteSettings } from "@/services/settingService";
 import { useCart } from "@/context/CartContext";
 import { useCustomer } from "@/context/CustomerContext";
 import { useWishlist } from "@/context/WishlistContext";
+import { useSiteLogo } from "@/context/SiteLogoContext";
 import { trackPixelEvent } from "@/lib/pixel";
 
 const PRIMARY   = "#073763";   // logo navy
@@ -27,12 +28,13 @@ const DEFAULT_NAV_ITEMS: NavItem[] = [
   { label: "SPORTS", sub: [] },
 ];
 
-function LogoFallback() {
+function LogoPlaceholder() {
   return (
-    <span aria-label="KAF LifeStyle" style={{ display: "inline-flex", flexDirection: "column", alignItems: "flex-start", color: PRIMARY, lineHeight: 0.82 }}>
-      <strong style={{ fontSize: 35, fontWeight: 900, letterSpacing: "-0.08em" }}>KAF</strong>
-      <small style={{ marginTop: 6, fontSize: 7, fontWeight: 700, letterSpacing: "0.28em" }}>LIFESTYLE</small>
-    </span>
+    <span
+      aria-label="Loading site logo"
+      aria-busy="true"
+      style={{ display: "block", width: "100%", height: "100%" }}
+    />
   );
 }
 
@@ -46,12 +48,13 @@ function applyFavicon(url: string | null) {
 }
 
 function HeaderInner({ logoUrl }: HeaderProps) {
+  const layoutLogo = useSiteLogo();
   const [mobileOpen,    setMobileOpen]    = useState(false);
   const [openDrop,      setOpenDrop]      = useState<string | null>(null);
   const [mobileExpand,  setMobileExpand]  = useState<string | null>(null);
   const [search,        setSearch]        = useState("");
   const [navItems,      setNavItems]      = useState<NavItem[]>(DEFAULT_NAV_ITEMS);
-  const [resolvedLogo,  setResolvedLogo]  = useState<string | null>(logoUrl || null);
+  const [resolvedLogo,  setResolvedLogo]  = useState<string | null>(logoUrl || layoutLogo || null);
   // Search dropdown
   const [allProducts,   setAllProducts]   = useState<Product[]>([]);
   const [productsLoaded, setProductsLoaded] = useState(false);
@@ -75,12 +78,12 @@ function HeaderInner({ logoUrl }: HeaderProps) {
 
   // Sync logo from prop (server-side) or fetch from API on client
   useEffect(() => {
-    if (logoUrl) { setResolvedLogo(logoUrl); return; }
+    if (logoUrl || layoutLogo) { setResolvedLogo(logoUrl || layoutLogo); return; }
     fetchSiteSettings().then((s) => {
       setResolvedLogo(s.logoUrl || null);
       applyFavicon(s.faviconUrl);
     });
-  }, [logoUrl]);
+  }, [logoUrl, layoutLogo]);
 
   // Lazily load all products when the search bar is first focused
   const loadProducts = useCallback(async () => {
@@ -224,7 +227,7 @@ function HeaderInner({ logoUrl }: HeaderProps) {
                 {resolvedLogo ? (
                   <img src={resolvedLogo} alt="Logo" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
                 ) : (
-                  <LogoFallback />
+                  <LogoPlaceholder />
                 )}
               </div>
             </Link>
@@ -350,7 +353,7 @@ function HeaderInner({ logoUrl }: HeaderProps) {
               {resolvedLogo ? (
                 <img src={resolvedLogo} alt="Logo" style={{ width: "100%", height: "100%", objectFit: "contain", objectPosition: "left center" }} />
               ) : (
-                <LogoFallback />
+                <LogoPlaceholder />
               )}
             </div>
           </Link>
