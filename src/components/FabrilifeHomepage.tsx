@@ -104,6 +104,9 @@ export default function FabrilifeHomepage({ products, categories, banners, setti
     ...products.filter((product) => product.bestDeals),
     ...products.filter((product) => !product.bestDeals),
   ].slice(0, 12);
+  const megaDealProducts = products
+    .filter((product) => product.discount > 0 || product.originalPrice > product.discountedPrice)
+    .slice(0, 12);
   const bulkBanner = wideBanners.find((banner) => /bulk/i.test(banner.category || ""));
   const affiliateBanner = wideBanners.find((banner) => /affiliate|app/i.test(banner.category || ""));
 
@@ -114,8 +117,15 @@ export default function FabrilifeHomepage({ products, categories, banners, setti
         {categories.slice(0, 3).map((category) => <Link key={category.Id} href={`/?menu=${encodeURIComponent(category.label)}`}>{category.label}</Link>)}
         <div className="fl-app-links">
           <span>Get 5% off on app</span>
-          <a href="#" aria-label="Get it on Google Play" className="fl-store-badge"><b className="fl-play-mark">▶</b><small>GET IT ON</small><strong>Google Play</strong></a>
-          <a href="#" aria-label="Download on the App Store" className="fl-store-badge"><b className="fl-apple-mark">●</b><small>Download on the</small><strong>App Store</strong></a>
+          <a href="#" aria-label="Download the KAF LifeStyle app" className="fl-store-badges">
+            <Image
+              src="/images/app-store-badges.jpg"
+              alt="Get it on Google Play and download on the App Store"
+              fill
+              sizes="290px"
+              className="object-contain"
+            />
+          </a>
         </div>
       </nav>
 
@@ -140,6 +150,15 @@ export default function FabrilifeHomepage({ products, categories, banners, setti
           <h2><Link href={`/?menu=${encodeURIComponent(defaultCategory)}&offer=delivery`}>Free Delivery</Link></h2>
           <div className="fl-new-grid">
             {products.filter((product) => product.freeShipping).slice(0, 12).map((product) => <ProductTile key={`free-delivery-${product.id}`} product={product} />)}
+          </div>
+        </section>
+      )}
+
+      {megaDealProducts.length > 0 && (
+        <section id="mega-deal" className="fl-top-selling">
+          <h2><Link href={`/?menu=${encodeURIComponent(defaultCategory)}&offer=deal`}>Mega Deal</Link></h2>
+          <div className="fl-new-grid">
+            {megaDealProducts.map((product) => <ProductTile key={`mega-deal-${product.id}`} product={product} />)}
           </div>
         </section>
       )}

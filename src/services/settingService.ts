@@ -61,7 +61,6 @@ type RawSiteSetting = Partial<SiteSetting> & {
   name?: string | null;
   logoFile?: string | null;
   whiteLogo?: string | null;
-  darkLogo?: string | null;
   faviconFile?: string | null;
   faviconLogo?: string | null;
   scrollText?: string | null;
@@ -241,7 +240,7 @@ export async function fetchSiteSettings(): Promise<SiteSetting> {
     if (!res.ok) return empty;
     const json = await res.json();
     const d = unwrapApiData<RawSiteSetting>(json, {});
-    const logoFile = d.logoFile || d.whiteLogo || d.darkLogo || null;
+    const logoFile = d.logoFile || d.whiteLogo || null;
     const faviconFile = d.faviconFile || d.faviconLogo || null;
     const websiteFooter = toFooter(d.websiteFooter);
     return {

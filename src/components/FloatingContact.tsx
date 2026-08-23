@@ -103,7 +103,7 @@ export default function FloatingContact({ settings }: Props) {
   return (
     <aside
       aria-label="Contact options"
-      className="fixed bottom-5 right-3.5 z-[110] flex flex-col items-center gap-2 rounded-full border border-white/20 bg-slate-950/80 p-2 shadow-2xl backdrop-blur-md md:right-5 transition-all duration-300"
+      className="floating-contact"
     >
       {/* Contact Options (Visible when open) */}
       <div
@@ -122,7 +122,7 @@ export default function FloatingContact({ settings }: Props) {
             onClick={() => trackContact(contact.label, contact.href)}
             aria-label={contact.label}
             title={contact.label}
-            className="flex h-11 w-11 items-center justify-center rounded-full text-white shadow-lg transition-transform hover:scale-110 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+            className="floating-contact-button flex items-center justify-center rounded-full text-white shadow-lg transition-transform hover:scale-110 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
             style={{ backgroundColor: contact.color }}
           >
             {contact.icon}
@@ -135,7 +135,7 @@ export default function FloatingContact({ settings }: Props) {
         onClick={() => setIsOpen(!isOpen)}
         aria-label={isOpen ? "Close contact options" : "Open contact options"}
         title={isOpen ? "Close contact menu" : "Contact Us"}
-        className={`flex h-11 w-11 items-center justify-center rounded-full text-white shadow-lg transition-all duration-300 cursor-pointer ${
+        className={`floating-contact-button flex items-center justify-center rounded-full text-white shadow-lg transition-all duration-300 cursor-pointer ${
           isOpen
             ? "bg-[#7c3aed] hover:bg-[#6d28d9] rotate-0"
             : "bg-[#10B8C4] hover:bg-[#0d9ba5] rotate-180"

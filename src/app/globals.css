@@ -17,6 +17,9 @@ body {
   color: #333;
   overflow-x: hidden;
 }
+html {
+  overflow-x: hidden;
+}
 
 :root {
   --ink: #152a24;
@@ -33,6 +36,119 @@ body {
   width: min(calc(100% - var(--site-gutter)), var(--site-max));
   margin-inline: auto;
 }
+.stores-banner {
+  position: relative;
+  display: block;
+  width: 100vw;
+  aspect-ratio: 1520 / 360;
+  min-height: 150px;
+  max-height: 360px;
+  margin: 0 calc(50% - 50vw) 22px;
+  overflow: hidden;
+  border-block: 1px solid #e7e9ed;
+  border-inline: 0;
+  border-radius: 0;
+  background:
+    linear-gradient(135deg, #f8fafc 0%, #eef2f4 48%, #f9fafb 100%);
+  box-shadow: 0 16px 36px rgb(15 23 42 / 9%);
+}
+.stores-banner::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgb(246 247 248 / 94%) 0%, rgb(246 247 248 / 78%) 34%, rgb(246 247 248 / 8%) 72%);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 55%);
+}
+.stores-banner-copy {
+  position: absolute;
+  top: clamp(18px, 3vw, 38px);
+  left: 50%;
+  z-index: 2;
+  display: flex;
+  width: min(calc(100% - 32px), 570px);
+  transform: translateX(-50%);
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  color: #18201d;
+}
+.stores-banner-kicker {
+  color: #b9780d;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.24em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+.stores-banner-copy strong {
+  margin-top: 8px;
+  font-size: clamp(26px, 3vw, 40px);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+.stores-banner-copy span:last-child {
+  margin-top: 12px;
+  color: #5d6662;
+  font-size: clamp(12px, 1.2vw, 15px);
+  line-height: 1.5;
+}
+.stores-banner-demo {
+  isolation: isolate;
+  background:
+    linear-gradient(120deg, rgb(7 55 99 / 10%) 0%, rgb(16 184 196 / 12%) 42%, rgb(244 172 53 / 14%) 100%),
+    linear-gradient(135deg, #ffffff 0%, #eef6f5 55%, #fff7e7 100%);
+}
+.stores-banner-demo::before {
+  position: absolute;
+  right: clamp(24px, 7vw, 110px);
+  bottom: -42px;
+  z-index: 1;
+  width: clamp(220px, 30vw, 430px);
+  height: clamp(120px, 16vw, 210px);
+  content: "";
+  background:
+    linear-gradient(90deg, rgb(7 55 99 / 88%) 0 14%, transparent 14% 21%, rgb(16 184 196 / 82%) 21% 35%, transparent 35% 42%, rgb(244 172 53 / 90%) 42% 56%, transparent 56% 63%, rgb(7 55 99 / 75%) 63% 77%, transparent 77%),
+    linear-gradient(#ffffff, #ffffff);
+  border: 1px solid rgb(7 55 99 / 10%);
+  border-radius: 18px 18px 0 0;
+  opacity: 0.9;
+  transform: skewX(-8deg);
+}
+.stores-banner-demo-mark {
+  position: absolute;
+  left: clamp(22px, 5vw, 78px);
+  bottom: clamp(20px, 4vw, 54px);
+  z-index: 1;
+  color: rgb(7 55 99 / 10%);
+  font-size: clamp(54px, 10vw, 140px);
+  font-weight: 900;
+  letter-spacing: -0.08em;
+  line-height: 0.8;
+}
+.stores-banner-demo-card {
+  position: absolute;
+  z-index: 1;
+  display: block;
+  border: 1px solid rgb(255 255 255 / 70%);
+  border-radius: 14px;
+  background: rgb(255 255 255 / 70%);
+  box-shadow: 0 18px 40px rgb(15 23 42 / 12%);
+}
+.stores-banner-demo-card-one {
+  right: clamp(36px, 10vw, 170px);
+  top: clamp(48px, 7vw, 92px);
+  width: clamp(104px, 13vw, 180px);
+  height: clamp(70px, 8vw, 105px);
+}
+.stores-banner-demo-card-two {
+  left: clamp(28px, 10vw, 150px);
+  top: clamp(76px, 9vw, 128px);
+  width: clamp(92px, 12vw, 155px);
+  height: clamp(58px, 7vw, 92px);
+}
 .stores-list {
   width: 100%;
   max-width: var(--site-max);
@@ -41,6 +157,41 @@ body {
 @media (max-width: 767px) {
   :root {
     --site-gutter: 20px;
+  }
+  .stores-banner {
+    aspect-ratio: 16 / 9;
+    min-height: 180px;
+    margin-bottom: 18px;
+  }
+  .stores-banner-copy {
+    top: 18px;
+  }
+  .stores-banner-copy strong {
+    margin-top: 6px;
+  }
+  .stores-banner-copy span:last-child {
+    margin-top: 8px;
+  }
+  .stores-banner-demo-card-two {
+    display: none;
+  }
+  .stores-banner-demo::before {
+    right: -40px;
+    bottom: -34px;
+  }
+  .store-card-full {
+    height: auto !important;
+    min-height: 0 !important;
+  }
+  .store-card-full > div:first-child > div {
+    flex-direction: column;
+  }
+  .store-card-full > div:last-child {
+    min-height: min(62vh, 430px);
+    flex: 0 0 auto;
+  }
+  .stores-list {
+    max-width: 100%;
   }
 }
 .home-shell {
@@ -812,6 +963,8 @@ body {
   gap: clamp(12px, 1.8vw, 32px);
 }
 .site-header {
+  max-width: 100vw;
+  overflow-x: clip;
   box-shadow: 0 3px 12px rgba(15, 23, 42, 0.1);
   background: #fff;
 }
@@ -1435,8 +1588,12 @@ button.header-action {
 }
 @media (max-width: 767px) {
   .catalog-page {
-    width: min(calc(100% - var(--site-gutter)), var(--site-max));
+    width: 100%;
+    max-width: 100vw;
+    padding-right: 12px;
+    padding-left: 12px;
     padding-top: 14px;
+    overflow-x: hidden;
   }
   .catalog-search-row {
     padding: 7px;
@@ -1452,10 +1609,13 @@ button.header-action {
   }
   .catalog-chip-row {
     align-items: flex-start;
+    gap: 10px;
   }
   .catalog-chip-row > div {
+    max-width: calc(100vw - 78px);
     flex-wrap: nowrap;
     overflow-x: auto;
+    padding-bottom: 2px;
   }
   .catalog-chip-row > div a {
     flex: none;
@@ -1479,6 +1639,11 @@ button.header-action {
   }
   .catalog-sidebar.is-open {
     display: block;
+    position: static;
+    top: auto;
+    width: 100%;
+    max-height: min(65vh, 520px);
+    margin-bottom: 16px;
   }
   .catalog-grid {
     grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
@@ -1513,15 +1678,25 @@ button.header-action {
     width: 100%;
     margin-top: 0;
   }
+  .header-mega-menu,
+  .profile-menu-dropdown {
+    display: none;
+  }
 }
 
 /* Fabrilife-inspired, admin-driven homepage composition */
 .kaf-footer {
+  width: 100%;
+  max-width: 100vw;
   margin-top: 16px;
+  overflow-x: clip;
   background: #58595c;
   color: #e4e4e4;
 }
 .kaf-footer-main {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: clip;
   /* background:
     radial-gradient(
       circle at 32% 20%,
@@ -1537,6 +1712,9 @@ button.header-action {
   width: min(calc(100% - var(--site-gutter)), var(--site-max));
   margin: 0 auto;
   padding: 55px 0 60px;
+}
+.kaf-footer-grid > section {
+  min-width: 0;
 }
 .kaf-footer-logo {
   position: relative;
@@ -1582,6 +1760,7 @@ button.header-action {
   font-size: 12px;
 }
 .kaf-footer-follow > p {
+  overflow-wrap: anywhere;
   max-width: 315px;
   margin-bottom: 25px;
   color: #ddd;
@@ -1615,16 +1794,18 @@ button.header-action {
 }
 .kaf-facebook-card {
   display: flex;
+  box-sizing: border-box;
   max-width: 330px;
   min-height: 76px;
   align-items: center;
   gap: 13px;
   padding: 12px 14px;
   border-radius: 8px;
-  background: #fff;
+  background: #ffffffcc;
   color: #181818;
   border: 1px solid #e1e5eb;
   box-shadow: 0 2px 8px rgb(0 0 0 / 12%);
+  overflow: hidden;
   transition:
     transform 0.18s ease,
     box-shadow 0.18s ease;
@@ -1635,19 +1816,25 @@ button.header-action {
 }
 .kaf-facebook-card i {
   display: grid;
-  width: 45px;
-  height: 45px;
+  width: 32px;
+  height: 32px;
   flex: none;
   place-items: center;
-  border-radius: 6px;
-  background: #edf4ff;
-  font-size: 30px;
+  border-radius: 50%;
+  background: #1877f2;
+  color: #fff !important;
+  font-size: 22px;
   font-style: normal;
   font-weight: 900;
 }
 .kaf-facebook-card strong {
   flex: 1;
+  min-width: 0;
   font-size: 15px;
+}
+.kaf-facebook-card strong > span,
+.kaf-facebook-card small {
+  overflow-wrap: anywhere;
 }
 .kaf-facebook-card small {
   display: block;
@@ -1672,7 +1859,7 @@ button.header-action {
 .kaf-footer-bottom {
   text-align: center;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
-  background: #080909;
+  background: #fff;
   padding: 24px 16px;
 }
 .kaf-footer-bottom-inner {
@@ -1682,6 +1869,167 @@ button.header-action {
 }
 .kaf-footer-bottom-inner p {
   text-align: center;
+  color: #555;
+  font-size: 13px;
+}
+.floating-contact {
+  position: fixed;
+  right: max(14px, env(safe-area-inset-right));
+  bottom: max(20px, env(safe-area-inset-bottom));
+  z-index: 110;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border: 1px solid rgb(255 255 255 / 20%);
+  border-radius: 999px;
+  background: rgb(15 23 42 / 80%);
+  box-shadow: 0 20px 35px rgb(15 23 42 / 24%);
+  backdrop-filter: blur(12px);
+  transition: all 0.3s ease;
+}
+.floating-contact-button {
+  width: 44px;
+  height: 44px;
+}
+.scroll-to-top-button {
+  position: fixed;
+  right: calc(max(14px, env(safe-area-inset-right)) + 62px);
+  bottom: max(24px, env(safe-area-inset-bottom));
+  z-index: 100;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+}
+
+@media (max-width: 1199px) {
+  .kaf-footer-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 38px clamp(28px, 6vw, 64px);
+  }
+  .kaf-footer-follow > p {
+    max-width: 420px;
+  }
+}
+
+@media (max-width: 767px) {
+  .kaf-footer {
+    width: 100vw;
+    max-width: 100vw;
+    margin-right: calc(50% - 50vw);
+    margin-left: calc(50% - 50vw);
+    margin-top: 10px;
+  }
+  .kaf-footer-grid {
+    width: 100%;
+    max-width: 100vw;
+    grid-template-columns: 1fr;
+    gap: 30px;
+    padding: 34px 20px 38px;
+    overflow: hidden;
+  }
+  .kaf-footer-logo {
+    width: 150px;
+    height: 72px;
+  }
+  .kaf-footer-tagline {
+    margin-bottom: 18px;
+    font-size: 14px;
+  }
+  .kaf-footer-heading {
+    margin-bottom: 10px;
+    font-size: 15px;
+  }
+  .kaf-footer-link {
+    padding: 4px 0;
+    font-size: 14px;
+  }
+  .kaf-footer-follow > p {
+    width: 100%;
+    max-width: none;
+    margin-bottom: 16px;
+    font-size: 13px;
+  }
+  .kaf-footer-socials {
+    flex-wrap: wrap;
+    gap: 10px 14px;
+    margin-bottom: 18px;
+  }
+  .kaf-facebook-card {
+    width: 100%;
+    max-width: 100%;
+    gap: 10px;
+    padding: 10px;
+  }
+  .kaf-facebook-card > div {
+    flex: 0 0 auto;
+  }
+  .kaf-facebook-card strong {
+    min-width: 0;
+    font-size: 13px;
+  }
+  .kaf-facebook-card strong > span {
+    flex-wrap: wrap;
+  }
+  .kaf-facebook-card b {
+    flex: 0 0 auto;
+    font-size: 11px;
+  }
+  .kaf-app-badges {
+    width: 100%;
+    max-width: 300px;
+    height: 58px;
+  }
+  .kaf-footer-bottom {
+    padding: 18px 74px 22px 16px;
+  }
+  .kaf-footer-bottom-inner p {
+    font-size: 11px;
+    line-height: 1.5;
+  }
+  .floating-contact {
+    right: max(10px, env(safe-area-inset-right));
+    bottom: max(12px, env(safe-area-inset-bottom));
+    gap: 7px;
+    padding: 7px;
+  }
+  .floating-contact-button {
+    width: 40px;
+    height: 40px;
+  }
+  .floating-contact-button svg {
+    width: 18px;
+    height: 18px;
+  }
+  .scroll-to-top-button {
+    right: calc(max(10px, env(safe-area-inset-right)) + 56px);
+    bottom: max(16px, env(safe-area-inset-bottom));
+    width: 38px;
+    height: 38px;
+  }
+}
+
+@media (max-width: 420px) {
+  .kaf-footer-grid {
+    padding-right: 76px;
+    padding-bottom: 44px;
+  }
+  .kaf-facebook-card {
+    align-items: flex-start;
+  }
+  .kaf-facebook-card b {
+    display: none;
+  }
+  .floating-contact {
+    transform: scale(0.94);
+    transform-origin: right bottom;
+  }
+  .scroll-to-top-button {
+    right: auto;
+    left: max(12px, env(safe-area-inset-left));
+    bottom: max(16px, env(safe-area-inset-bottom));
+  }
 }
 
 /* Fabrilife Layout Styles */
@@ -1693,7 +2041,7 @@ button.header-action {
 }
 .fl-quick-links {
   display: grid;
-  grid-template-columns: repeat(4, 1fr) auto;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) minmax(360px, 430px);
   width: 100%;
   min-height: 48px;
   background: #f3f3f3;
@@ -1721,57 +2069,35 @@ button.header-action {
 .fl-app-links {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  gap: 12px;
-  padding: 5px 16px;
+  justify-content: center;
+  gap: 14px;
+  min-width: 0;
+  height: 100%;
+  padding: 6px 14px;
+  border-left: 1px solid #e0e0e0;
   color: #161820;
   text-transform: uppercase;
 }
 .fl-app-links > span {
+  flex: 0 1 auto;
   font-size: 12px;
   font-weight: 800;
   letter-spacing: 0.04em;
   white-space: nowrap;
   color: #222;
 }
-.fl-store-badge {
+.fl-store-badges {
   position: relative;
-  display: grid;
-  grid-template-columns: 24px auto;
-  grid-template-rows: 11px 18px;
-  width: 132px;
-  height: 38px;
-  padding: 3px 8px;
+  display: block;
+  flex: 0 0 290px;
+  width: 290px;
+  height: 42px;
+  overflow: hidden;
   border-radius: 4px;
-  background: #000;
-  color: #fff;
-  text-transform: none;
-  text-decoration: none;
   transition: opacity 0.15s;
 }
-.fl-store-badge:hover {
+.fl-store-badges:hover {
   opacity: 0.85;
-}
-.fl-store-badge b {
-  grid-row: 1 / 3;
-  display: flex;
-  align-items: center;
-  font-size: 18px;
-}
-.fl-store-badge small {
-  align-self: end;
-  font-size: 7px;
-  line-height: 1;
-  color: #ccc;
-}
-.fl-store-badge strong {
-  font-size: 14px;
-  line-height: 16px;
-  white-space: nowrap;
-  color: #fff;
-}
-.fl-play-mark {
-  color: #37d67a;
 }
 .fl-apple-mark {
   color: #fff;
@@ -2004,6 +2330,10 @@ button.header-action {
   height: 22px;
   fill: currentColor;
 }
+.kaf-facebook-card i svg {
+  width: 19px;
+  height: 19px;
+}
 .kaf-footer-socials svg {
   width: 26px;
   height: 26px;
@@ -2218,6 +2548,21 @@ button.header-action {
   background: #d5f8f2;
 }
 @media (max-width: 1180px) {
+  .fl-quick-links {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) minmax(320px, 360px);
+  }
+  .fl-app-links {
+    gap: 12px;
+    padding-inline: 10px;
+  }
+  .fl-app-links > span {
+    font-size: 11px;
+  }
+  .fl-store-badges {
+    flex-basis: 246px;
+    width: 246px;
+    height: 36px;
+  }
   .fl-new-grid {
     grid-template-columns: repeat(5, minmax(0, 1fr));
   }
@@ -2252,18 +2597,20 @@ button.header-action {
   .fl-app-links {
     grid-column: 1 / -1;
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 136px));
+    grid-template-columns: minmax(0, 290px);
     justify-content: center;
-    gap: 8px 12px;
+    gap: 8px;
     min-width: 0;
     padding: 10px 14px 12px;
+    border-left: 0;
   }
   .fl-app-links > span {
     grid-column: 1 / -1;
     text-align: center;
   }
-  .fl-store-badge {
+  .fl-store-badges {
     width: 100%;
+    height: 42px;
   }
   .fl-announcement,
   .fl-new-arrival {
@@ -2338,6 +2685,13 @@ button.header-action {
   .fl-home-shell {
     padding-inline: 8px;
   }
+  .fl-quick-links {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .fl-app-links {
+    grid-template-columns: minmax(0, 280px);
+    padding-inline: 10px;
+  }
   .fl-new-grid,
   .fl-top-selling-grid,
   .fl-editorial-products {
@@ -2355,6 +2709,22 @@ button.header-action {
   }
   .fl-editorial-cover {
     min-height: 300px;
+  }
+}
+
+@media (max-width: 380px) {
+  .fl-app-links {
+    grid-template-columns: minmax(0, 250px);
+    gap: 8px;
+  }
+  .fl-store-badges {
+    height: 36px;
+  }
+  .fl-app-links > span {
+    font-size: 11px;
+  }
+  .catalog-grid {
+    gap: 8px;
   }
 }
 .fabrilife-footer {

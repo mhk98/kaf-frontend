@@ -54,7 +54,7 @@ export default function CategoryListing({ menu, sub, child, products, categories
   }, [categoryProducts, sort, stockOnly, search, offer, sub, child]);
 
   const countCategory = (label: string) => products.filter((product) => product.category?.toLowerCase() === label.toLowerCase()).length;
-  const countSubcategory = (category: string, subcategory: string) => products.filter((product) => product.category?.toLowerCase() === category.toLowerCase() && product.subCategory?.toLowerCase() === subcategory.toLowerCase()).length;
+  const countChildCategory = (category: string, childCategory: string) => products.filter((product) => product.category?.toLowerCase() === category.toLowerCase() && product.childCategory?.toLowerCase() === childCategory.toLowerCase()).length;
 
   const title = child || sub || menu;
 
@@ -63,9 +63,28 @@ export default function CategoryListing({ menu, sub, child, products, categories
       <div className="catalog-breadcrumb"><Link href="/">Home</Link><span>›</span><Link href={`/?menu=${encodeURIComponent(menu)}`}>{menu}</Link>{sub && <><span>›</span><span>{sub}</span></>}{child && <><span>›</span><span>{child}</span></>}</div>
       <div className="catalog-layout">
         <aside className={`catalog-sidebar ${sidebarOpen ? "is-open" : ""}`}>
-          <section className="catalog-specials"><h2>Special Offers</h2><button className={offer === "deal" ? "active" : ""} onClick={() => setOffer(offer === "deal" ? "all" : "deal")}>ϟ Mega Deal</button><button className={offer === "new" ? "active" : ""} onClick={() => setOffer(offer === "new" ? "all" : "new")}>ϟ New Arrival</button><button className={offer === "top" ? "active" : ""} onClick={() => setOffer(offer === "top" ? "all" : "top")}>ϟ Top Selling</button><button className={offer === "delivery" ? "active" : ""} onClick={() => setOffer(offer === "delivery" ? "all" : "delivery")}>ϟ Free Delivery</button><button onClick={() => setOffer("all")}>ϟ Merchandise</button></section>
+          <section className="catalog-specials"><h2>Special Offers</h2><button className={offer === "deal" ? "active" : ""} onClick={() => setOffer(offer === "deal" ? "all" : "deal")}>ϟ Mega Deal</button><button className={offer === "new" ? "active" : ""} onClick={() => setOffer(offer === "new" ? "all" : "new")}>ϟ New Arrival</button><button className={offer === "top" ? "active" : ""} onClick={() => setOffer(offer === "top" ? "all" : "top")}>ϟ Top Selling</button><button className={offer === "delivery" ? "active" : ""} onClick={() => setOffer(offer === "delivery" ? "all" : "delivery")}>ϟ Free Delivery</button></section>
           <section className="catalog-category-tree"><h2>Categories</h2>
-            {categories.map((category) => <div key={category.Id} className={`catalog-tree-category ${category.label.toLowerCase() === menu.toLowerCase() ? "current" : ""}`}><Link href={`/?menu=${encodeURIComponent(category.label)}`}><strong>{category.label}</strong><span>{countCategory(category.label)}</span></Link>{(category.sub || []).map((item) => <div key={`${category.Id}-${item.label}`}><Link className={sub?.toLowerCase() === item.label.toLowerCase() && category.label.toLowerCase() === menu.toLowerCase() ? "active" : ""} href={`/?menu=${encodeURIComponent(category.label)}&sub=${encodeURIComponent(item.label)}`}>{item.label}<span>{countSubcategory(category.label, item.label)}</span></Link>{category.label.toLowerCase() === menu.toLowerCase() && sub?.toLowerCase() === item.label.toLowerCase() && (item.childItems || []).map((childItem) => <Link key={childItem.label} className={`catalog-child ${child?.toLowerCase() === childItem.label.toLowerCase() ? "active" : ""}`} href={`/?menu=${encodeURIComponent(category.label)}&sub=${encodeURIComponent(item.label)}&child=${encodeURIComponent(childItem.label)}`}>{childItem.label}</Link>)}</div>)}</div>)}
+            {categories.map((category) => (
+              <div key={category.Id} className={`catalog-tree-category ${category.label.toLowerCase() === menu.toLowerCase() ? "current" : ""}`}>
+                <Link href={`/?menu=${encodeURIComponent(category.label)}`}>
+                  <strong>{category.label}</strong>
+                  <span>{countCategory(category.label)}</span>
+                </Link>
+                {(category.sub || []).flatMap((item) =>
+                  (item.childItems || []).map((childItem) => (
+                    <Link
+                      key={`${category.Id}-${item.label}-${childItem.label}`}
+                      className={child?.toLowerCase() === childItem.label.toLowerCase() && category.label.toLowerCase() === menu.toLowerCase() ? "active" : ""}
+                      href={`/?menu=${encodeURIComponent(category.label)}&sub=${encodeURIComponent(item.label)}&child=${encodeURIComponent(childItem.label)}`}
+                    >
+                      {childItem.label}
+                      <span>{countChildCategory(category.label, childItem.label)}</span>
+                    </Link>
+                  ))
+                )}
+              </div>
+            ))}
           </section>
           <section><h2>Availability</h2><label className="catalog-check"><input type="checkbox" checked={stockOnly} onChange={(event) => setStockOnly(event.target.checked)} /> In stock only</label></section>
         </aside>
