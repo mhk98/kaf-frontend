@@ -3,7 +3,6 @@
 import { useEffect, useState, type ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { fetchPublicPages, type WebsitePage } from "@/services/pageService";
 import { fetchSiteSettings, type SiteSetting } from "@/services/settingService";
 
 const SOCIALS = [
@@ -13,13 +12,13 @@ const SOCIALS = [
   { key: "tiktokUrl", name: "TikTok", color: "#00e5e5", icon: "♪" },
   { key: "youtubeUrl", name: "YouTube", color: "#ff0000", icon: "▶" },
   { key: "linkedinUrl", name: "LinkedIn", color: "#0a66c2", icon: "in" },
+  { key: "telegramUrl", name: "Telegram", color: "#229ed9", icon: "➤" },
 ] as const;
 const FACEBOOK_PAGE_URL = "https://www.facebook.com/kaflifestyle";
 const BRAND = [
   { label: "About KAF LifeStyle", url: "/page/about-us" },
   { label: "Brand Story", url: "/page/brand-story" },
   { label: "Company Information", url: "/page/company-information" },
-  { label: "Blogs & News", url: "/page/blogs" },
   { label: "FAQs", url: "/page/faqs" },
   { label: "Contact Us", url: "/contact" },
 ];
@@ -92,6 +91,12 @@ function SocialIcon({ platform }: { platform: string }) {
         <path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8ZM9.6 15.6V8.4l6.3 3.6-6.3 3.6Z" />
       </svg>
     );
+  if (name.includes("telegram"))
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M21.8 3.2 2.9 10.5c-1.3.5-1.3 1.2-.2 1.5l4.8 1.5 1.9 5.8c.2.7.1 1 .9 1 .6 0 .9-.3 1.2-.6l2.3-2.2 4.8 3.5c.9.5 1.5.2 1.8-.8l3.2-15.1c.3-1.3-.5-1.9-1.8-1.4ZM8.2 13.1l10.9-6.9c.5-.3 1-.1.6.3l-9 8.1-.4 4.1-2.1-5.6Z" />
+      </svg>
+    );
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true">
       <path d="M5.3 7.9H1.8V21h3.5V7.9ZM3.5 2A2 2 0 1 0 3.5 6a2 2 0 0 0 0-4Zm17.7 5.6c-2.3 0-3.4 1.3-3.9 2.2V7.9H8.8V21h3.5v-6.5c0-1.7.3-3.4 2.5-3.4 2.2 0 2.2 2 2.2 3.5V21h3.5v-7.5c0-4-2.1-5.9-5-5.9Z" />
@@ -107,7 +112,6 @@ export default function KafFooter({
   const [resolved, setResolved] = useState<Partial<SiteSetting> | null>(
     settings || null,
   );
-  const [pages, setPages] = useState<WebsitePage[]>([]);
   const s = settings || resolved || {};
   const footer = s.websiteFooter || {};
   useEffect(() => {
@@ -116,27 +120,17 @@ export default function KafFooter({
         .then(setResolved)
         .catch(() => setResolved({}));
   }, [settings]);
-  useEffect(() => {
-    fetchPublicPages()
-      .then(setPages)
-      .catch(() => setPages([]));
-  }, []);
   if (footer.status === false) return null;
 
-  const brandLinks = pages.length
-    ? pages.slice(0, 6).map((page) => ({
-        label: page.title || page.name,
-        url: `/page/${page.slug}`,
-      }))
-    : BRAND;
-  const shoppingLinks = footer.customerLinks?.length
+  const brandLinks = BRAND;
+  const shoppingLinks = (footer.customerLinks?.length
     ? footer.customerLinks
-    : SHOPPING;
-  const policyLinks = footer.importantLinks?.length
+    : SHOPPING).filter((link) => link.label.trim().toLowerCase() !== "join kaf squad");
+  const policyLinks = (footer.importantLinks?.length
     ? footer.importantLinks
     : footer.quickLinks?.length
       ? footer.quickLinks
-      : POLICIES;
+      : POLICIES).filter((link) => link.label.trim().toLowerCase() !== "size guide policy");
   const configuredByPlatform = new Map(
     (footer.socialLinks || []).map((item) => [
       item.platform?.toLowerCase(),
@@ -258,15 +252,6 @@ export default function KafFooter({
                 <b>Follow</b>
               </a>
             )}
-            <div className="kaf-app-badges">
-              <Image
-                src="/images/app-store-badges.jpg"
-                alt="Download KAF LifeStyle on Google Play and the App Store"
-                fill
-                sizes="330px"
-                className="object-contain object-left"
-              />
-            </div>
           </section>
         </div>
       </div>

@@ -59,7 +59,7 @@ function trackContact(label: string, value: string) {
 }
 
 export default function FloatingContact({ settings }: Props) {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
   const [resolvedSettings, setResolvedSettings] = useState<Partial<SiteSetting> | null>(settings || null);
   const source = settings || resolvedSettings || {};
   const footerSettings = source.websiteFooter || {};

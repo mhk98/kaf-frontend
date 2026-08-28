@@ -6,6 +6,7 @@ import type { BannerItem } from "@/services/bannerService";
 import type { CategoryMenuItem } from "@/services/menuService";
 import type { SiteSetting } from "@/services/settingService";
 import type { BrandItem } from "@/services/brandService";
+import HorizontalCarousel from "./HorizontalCarousel";
 
 interface Props {
   products: Product[];
@@ -115,18 +116,8 @@ export default function FabrilifeHomepage({ products, categories, banners, setti
       <nav className="fl-quick-links" aria-label="Quick shop links">
         <Link href="#new-arrival">Shop now</Link>
         {categories.slice(0, 3).map((category) => <Link key={category.Id} href={`/?menu=${encodeURIComponent(category.label)}`}>{category.label}</Link>)}
-        <div className="fl-app-links">
-          <span>Get 5% off on app</span>
-          <a href="#" aria-label="Download the KAF LifeStyle app" className="fl-store-badges">
-            <Image
-              src="/images/app-store-badges.jpg"
-              alt="Get it on Google Play and download on the App Store"
-              fill
-              sizes="290px"
-              className="object-contain"
-            />
-          </a>
-        </div>
+        <Link href={`/?menu=${encodeURIComponent("Teens")}`}>Teens</Link>
+        <Link href={`/?menu=${encodeURIComponent("Sports")}`}>Sports</Link>
       </nav>
 
       {/* <div className="fl-announcement"><strong>Event T-shirt ›</strong> {settings.marqueeText || "Custom clothing with your brand logo or design? We deliver quality apparel at unbeatable prices."} <b>Click here ●</b></div> */}
@@ -165,11 +156,19 @@ export default function FabrilifeHomepage({ products, categories, banners, setti
 
       {promos.length > 0 && (
         <section className="fl-promo-grid">
-          {promos.slice(-2).map((banner) => (
-            <a key={banner.Id} href={banner.linkUrl || "#new-arrival"} className="fl-promo-card">
-              <Image src={banner.file} alt={banner.alt} fill sizes="50vw" className="object-cover" unoptimized />
-            </a>
-          ))}
+          <HorizontalCarousel
+            itemWidthClass="w-full md:w-[calc(50%-8px)]"
+            gap={16}
+            autoplay={promos.length > 2}
+            interval={4500}
+            showArrows={promos.length > 2}
+          >
+            {promos.map((banner) => (
+              <a key={banner.Id} href={banner.linkUrl || "#new-arrival"} className="fl-promo-card">
+                <Image src={banner.file} alt={banner.alt} fill sizes="(max-width: 767px) 100vw, 50vw" className="object-cover" unoptimized />
+              </a>
+            ))}
+          </HorizontalCarousel>
         </section>
       )}
 
@@ -184,7 +183,32 @@ export default function FabrilifeHomepage({ products, categories, banners, setti
 
       <section className="fl-story">
         <div><h2>{settings.metaTitle || "KAF LifeStyle"} <span>›</span></h2><h3>Because comfort and confidence go hand in hand.</h3><p>{settings.metaDescription || "Thoughtfully selected clothing, dependable quality and comfortable fits made for everyday confidence."}</p></div>
-        {stories[0] && <div className="fl-story-image"><Image src={stories[0].file} alt={stories[0].alt} fill sizes="35vw" className="object-cover" unoptimized /></div>}
+        {stories.length > 0 && (
+          <div className="fl-story-carousel">
+            <HorizontalCarousel
+              itemWidthClass="fl-story-carousel-item"
+              gap={12}
+              autoplay={stories.length > 2}
+              interval={4500}
+              showArrows={stories.length > 2}
+            >
+              {stories.map((banner) => (
+                <a key={banner.Id} href={banner.linkUrl || "#new-arrival"} className="fl-story-image">
+                  <Image
+                    src={banner.file}
+                    alt={banner.alt}
+                    width={800}
+                    height={500}
+                    sizes="35vw"
+                    className="fl-story-banner-image"
+                    loading="eager"
+                    unoptimized
+                  />
+                </a>
+              ))}
+            </HorizontalCarousel>
+          </div>
+        )}
       </section>
 
       {categoryBatches[0]?.filter((group) => group.products.length > 0).map((group, index) => (
