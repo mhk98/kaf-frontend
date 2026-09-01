@@ -327,6 +327,9 @@ export default function ProductDetailClient({
   const allImages = [...new Set([product.image, ...(product.gallery || [])].filter(Boolean))];
 
   const [activeIdx, setActiveIdx] = useState(0);
+  const [zoomOrigin, setZoomOrigin] = useState<{ x: number; y: number } | null>(
+    null,
+  );
   const [selectedColor, setSelectedColor] = useState(product.colors?.[0] ?? "");
   const [selectedSize, setSelectedSize] = useState(product.sizes?.[0] ?? "");
   const [qty, setQty] = useState(1);
@@ -440,6 +443,13 @@ export default function ProductDetailClient({
     router.push("/checkout");
   };
 
+  const handleZoomMove = (event: React.MouseEvent<HTMLDivElement>) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    const x = ((event.clientX - rect.left) / rect.width) * 100;
+    const y = ((event.clientY - rect.top) / rect.height) * 100;
+    setZoomOrigin({ x, y });
+  };
+
   const waPhone = phone ? phone.replace(/\D/g, "").replace(/^0/, "880") : null;
   const waHref = whatsappUrl || (waPhone ? `https://wa.me/${waPhone}` : null);
   const displayPhone = phone || "";
@@ -449,7 +459,13 @@ export default function ProductDetailClient({
       <div className="product-detail-grid">
       {/* Left Image Gallery */}
       <div className="product-gallery">
-        <div className="product-main-image">
+        <div
+          className="product-main-image"
+          style={{ cursor: "zoom-in" }}
+          onMouseEnter={handleZoomMove}
+          onMouseMove={handleZoomMove}
+          onMouseLeave={() => setZoomOrigin(null)}
+        >
           {product.discount > 0 && (
             <span
               className="absolute left-2 top-2 z-10 rounded-full text-sm font-bold text-white"
@@ -464,6 +480,13 @@ export default function ProductDetailClient({
             alt={product.name}
             fill
             className="object-contain p-4"
+            style={{
+              transformOrigin: zoomOrigin
+                ? `${zoomOrigin.x}% ${zoomOrigin.y}%`
+                : "center",
+              transform: zoomOrigin ? "scale(2.2)" : "scale(1)",
+              transition: "transform 0.15s ease-out",
+            }}
             unoptimized
           />
         </div>
@@ -473,7 +496,10 @@ export default function ProductDetailClient({
             {allImages.map((img, idx) => (
               <button
                 key={idx}
-                onClick={() => setActiveIdx(idx)}
+                onClick={() => {
+                  setActiveIdx(idx);
+                  setZoomOrigin(null);
+                }}
                 className="product-thumb bg-white"
                 style={{
                   borderColor: activeIdx === idx ? PRIMARY : "#e5e7eb",

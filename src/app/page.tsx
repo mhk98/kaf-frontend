@@ -10,11 +10,10 @@ import CategoryListing from "@/components/CategoryListing";
 import { fetchStorefrontProducts } from "@/services/productService";
 import { fetchSiteSettings, type SiteSetting } from "@/services/settingService";
 import { fetchBanners } from "@/services/bannerService";
-import { fetchBrands } from "@/services/brandService";
+import { fetchClients, type ClientItem } from "@/services/clientService";
 import { fetchCategoryMenus, type CategoryMenuItem } from "@/services/menuService";
 import type { Product } from "@/data/products";
 import type { BannerItem } from "@/services/bannerService";
-import type { BrandItem } from "@/services/brandService";
 
 function groupByCategory(products: Product[]): { title: string; products: Product[] }[] {
   const map = new Map<string, Product[]>();
@@ -35,20 +34,20 @@ export default async function Home({
   let allProducts: Product[] = [];
   let settings: Partial<SiteSetting> = {};
   let banners: { slides: BannerItem[]; sideBanners: BannerItem[]; popupBanners: BannerItem[]; customBanners: BannerItem[] } = { slides: [], sideBanners: [], popupBanners: [], customBanners: [] };
-  let brands: BrandItem[] = [];
+  let clients: ClientItem[] = [];
   let categoryMenus: CategoryMenuItem[] = [];
 
-  const [productsResult, settingsResult, bannersResult, brandsResult, categoryMenusResult] = await Promise.all([
+  const [productsResult, settingsResult, bannersResult, clientsResult, categoryMenusResult] = await Promise.all([
     fetchStorefrontProducts({ limit: 200, page: 1 }).catch(() => ({ products: [] as Product[] })),
     fetchSiteSettings().catch(() => ({} as Partial<SiteSetting>)),
     fetchBanners().catch(() => ({ slides: [] as BannerItem[], sideBanners: [] as BannerItem[], popupBanners: [] as BannerItem[], customBanners: [] as BannerItem[] })),
-    fetchBrands().catch(() => [] as BrandItem[]),
+    fetchClients().catch(() => [] as ClientItem[]),
     fetchCategoryMenus().catch(() => [] as CategoryMenuItem[]),
   ]);
   allProducts   = productsResult.products;
   settings      = settingsResult;
   banners       = bannersResult;
-  brands        = brandsResult;
+  clients       = clientsResult;
   categoryMenus = categoryMenusResult;
 
   let sections: { title: string; products: Product[] }[] = [];
@@ -89,7 +88,7 @@ export default async function Home({
       <main className="flex-1">
         {!isFiltered && <HeroBanner slides={banners.slides} sideBanners={banners.sideBanners} />}
         {!isFiltered && <PopupBanner banners={banners.popupBanners} />}
-        {!isFiltered && <FabrilifeHomepage products={allProducts} categories={categoryMenus} banners={banners.customBanners} settings={settings} brands={brands} />}
+        {!isFiltered && <FabrilifeHomepage products={allProducts} categories={categoryMenus} banners={banners.customBanners} settings={settings} clients={clients} />}
 
         {isFiltered && <CategoryListing menu={menu!} sub={sub} child={child} products={allProducts} categories={categoryMenus} initialOffer={initialOffer} />}
 

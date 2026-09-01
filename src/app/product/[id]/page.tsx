@@ -5,6 +5,7 @@ import Footer from "@/components/KafFooter";
 import FloatingContact from "@/components/FloatingContact";
 import ScrollToTop from "@/components/ScrollToTop";
 import ProductDetailClient from "@/components/ProductDetailClient";
+import ProductSection from "@/components/ProductSection";
 import Container from "@/components/Container";
 import { fetchProductById } from "@/services/productService";
 import { fetchSiteSettings, type SiteSetting } from "@/services/settingService";
@@ -29,6 +30,8 @@ export default async function ProductDetailPage({
   ]);
 
   if (!product) notFound();
+
+  const relatedProducts = product.relatedProducts ?? [];
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
@@ -176,6 +179,16 @@ export default async function ProductDetailPage({
             </div>
           </div>
         </Container>
+
+        {relatedProducts.length > 0 && (
+          <div className="mt-6">
+            <ProductSection
+              title="You may also like"
+              products={relatedProducts}
+              menuParam={product.category ?? undefined}
+            />
+          </div>
+        )}
       </main>
 
       <Footer settings={settings as Partial<SiteSetting>} />

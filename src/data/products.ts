@@ -21,6 +21,7 @@ export interface Product {
   category?: string | null;
   subCategory?: string | null;
   childCategory?: string | null;
+  relatedProducts?: Product[];
 }
 
 export interface ProductVariant {

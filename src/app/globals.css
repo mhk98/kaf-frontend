@@ -2544,26 +2544,67 @@ button.header-action {
   color: #5c616b;
   font-size: 13px;
 }
-.fl-partner-grid {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  gap: 20px 28px;
+.fl-partner-carousel {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 0 52px;
 }
-.fl-partner-grid a {
+/* let the arrows sit in the side gutters without being clipped */
+.fl-partner-carousel > div {
+  overflow: visible !important;
+}
+.fl-partner-carousel .scrollbar-hide {
+  scrollbar-width: none;
+}
+.fl-partner-carousel .scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.fl-partner-carousel button[aria-label="Previous"],
+.fl-partner-carousel button[aria-label="Next"] {
+  top: 50% !important;
+  width: 38px !important;
+  height: 38px !important;
+  font-size: 20px !important;
+  background: #1c1f26 !important;
+  color: #fff !important;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.22) !important;
+}
+.fl-partner-carousel button[aria-label="Previous"] {
+  left: -46px !important;
+}
+.fl-partner-carousel button[aria-label="Next"] {
+  right: -46px !important;
+}
+.fl-partner-slide {
   display: flex;
-  width: 110px;
-  height: 65px;
-  padding: 7px;
+  width: 100%;
+  height: clamp(84px, 9vw, 118px);
+  padding: 10px;
   align-items: center;
   justify-content: center;
   background: #fff;
 }
-.fl-partner-grid img {
-  width: 100%;
-  height: 100%;
+.fl-partner-slide img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
   object-fit: contain;
+}
+@media (max-width: 768px) {
+  .fl-partner-carousel {
+    max-width: 440px;
+    padding: 0 44px;
+  }
+  .fl-partner-carousel button[aria-label="Previous"] {
+    left: -38px !important;
+  }
+  .fl-partner-carousel button[aria-label="Next"] {
+    right: -38px !important;
+  }
+  .fl-partner-slide {
+    height: clamp(104px, 30vw, 150px);
+  }
 }
 .fl-affiliate-banner {
   position: relative;

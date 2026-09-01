@@ -24,10 +24,15 @@ export default function CategoryListing({ menu, sub, child, products, categories
   const currentCategory = categories.find((category) => category.label.toLowerCase() === menu.toLowerCase());
   const categoryProducts = useMemo(() => products.filter((product) => product.category?.toLowerCase() === menu.toLowerCase()), [products, menu]);
 
-  const subcategoryCounts = useMemo(() => {
-    const counts = new Map<string, number>();
+  const childCategoryCounts = useMemo(() => {
+    const counts = new Map<string, { count: number; sub: string | null }>();
     categoryProducts.forEach((product) => {
-      if (product.subCategory) counts.set(product.subCategory, (counts.get(product.subCategory) || 0) + 1);
+      if (!product.childCategory) return;
+      const existing = counts.get(product.childCategory);
+      counts.set(product.childCategory, {
+        count: (existing?.count || 0) + 1,
+        sub: existing?.sub ?? product.subCategory ?? null,
+      });
     });
     return [...counts.entries()];
   }, [categoryProducts]);
@@ -92,7 +97,12 @@ export default function CategoryListing({ menu, sub, child, products, categories
         <main className="catalog-results">
           <div className="catalog-search-row"><label><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search a product" /></label></div>
           <div className="catalog-audience-row">{categories.filter((category) => /^(men|women|kids|teens)$/i.test(category.label)).slice(0, 4).map((category, index) => <Link key={category.Id} href={`/?menu=${encodeURIComponent(category.label)}`} className={category.label.toLowerCase() === menu.toLowerCase() ? "active" : ""} data-tone={index}>{category.label}</Link>)}</div>
-          <div className="catalog-chip-row"><div>{subcategoryCounts.map(([label, count]) => <Link key={label} className={sub?.toLowerCase() === label.toLowerCase() ? "active" : ""} href={`/?menu=${encodeURIComponent(menu)}&sub=${encodeURIComponent(label)}`}>{label} <small>{count}</small></Link>)}</div><Link href="/checkout" className="catalog-cart-shortcut" aria-label="Open cart"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 3h2l2 12h11l2-8H7"/><circle cx="10" cy="20" r="1"/><circle cx="18" cy="20" r="1"/></svg></Link></div>
+          <div className="catalog-chip-row"><div>{childCategoryCounts.map(([label, meta]) => {
+            const params = new URLSearchParams({ menu });
+            if (meta.sub) params.set("sub", meta.sub);
+            params.set("child", label);
+            return <Link key={label} className={child?.toLowerCase() === label.toLowerCase() ? "active" : ""} href={`/?${params.toString()}`}>{label} <small>{meta.count}</small></Link>;
+          })}</div><Link href="/checkout" className="catalog-cart-shortcut" aria-label="Open cart"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 3h2l2 12h11l2-8H7"/><circle cx="10" cy="20" r="1"/><circle cx="18" cy="20" r="1"/></svg></Link></div>
           <header className="catalog-header"><div><h1>{title}</h1><p>{visibleProducts.length} products</p></div><div className="catalog-toolbar"><button type="button" className="catalog-filter-toggle" onClick={() => setSidebarOpen((open) => !open)}>☰ Filters</button><label>Sort by<select value={sort} onChange={(event) => setSort(event.target.value)}><option value="newest">Newest</option><option value="price-low">Price: Low to High</option><option value="price-high">Price: High to Low</option><option value="name">Name</option></select></label></div></header>
           {visibleProducts.length > 0 ? <div className="catalog-grid">{visibleProducts.map((product) => <ProductCard key={product.id} product={product} />)}</div> : <div className="catalog-empty"><h2>No products found</h2><p>Try another category or filter.</p></div>}
         </main>

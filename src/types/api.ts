@@ -36,6 +36,8 @@ export interface ApiProduct {
   sku: string | null;
   freeShipping?: boolean | string | number;
   bestDeals?: boolean | string | number;
+  relatedProductIds?: number[];
+  relatedProducts?: ApiProduct[];
   createdAt?: string;
   inStock: boolean;
 }

@@ -92,6 +92,9 @@ function mapToProduct(item: ApiProduct): Product {
     category: item.category,
     subCategory: item.subCategory,
     childCategory: item.childCategory ?? item.childcategory ?? null,
+    relatedProducts: Array.isArray(item.relatedProducts)
+      ? item.relatedProducts.map(mapToProduct)
+      : undefined,
   };
 }
 

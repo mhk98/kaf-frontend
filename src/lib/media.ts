@@ -1,5 +1,5 @@
 const API_ORIGIN = (
-  process.env.NEXT_PUBLIC_API_URL || "https://server.kaflifestylebd.com"
+  process.env.NEXT_PUBLIC_API_URL || "https://kaflifestylebd.com"
 ).replace(/\/$/, "");
 export const FALLBACK_IMAGE = "/placeholder.svg";
 
