@@ -80,6 +80,8 @@ function mapToProduct(item: ApiProduct): Product {
     image: toImgUrl(item.file),
     gallery: uniqueImages((item.gallery || []).map((f) => toImgUrl(f))),
     features: item.features || [],
+    description: item.description ?? null,
+    shortDescription: item.shortDescription ?? null,
     sku: item.sku ?? null,
     freeShipping: toBoolean(item.freeShipping),
     bestDeals: toBoolean(item.bestDeals),

@@ -9,6 +9,8 @@ export interface Product {
   image: string;
   gallery?: string[];
   features?: string[];
+  description?: string | null;
+  shortDescription?: string | null;
   sku?: string | null;
   freeShipping?: boolean;
   bestDeals?: boolean;

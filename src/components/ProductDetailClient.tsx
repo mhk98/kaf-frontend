@@ -593,6 +593,14 @@ export default function ProductDetailClient({
           </div>
         )}
 
+        {product.shortDescription && (
+          <div
+            style={{ marginBottom: "1rem" }}
+            className="product-rich-text mb-4"
+            dangerouslySetInnerHTML={{ __html: product.shortDescription }}
+          />
+        )}
+
         {product.colors && product.colors.length > 0 && (
           <div style={{ marginBottom: "1rem" }} className="mb-4">
             <p className="mb-2 text-sm font-bold text-black">Select Color</p>
@@ -701,6 +709,25 @@ export default function ProductDetailClient({
         )}
       </div>
     </div>
+      {product.description && (
+        <section
+          style={{
+            marginTop: 24,
+            background: "#fff",
+            border: "1px solid #e5e7eb",
+            padding: 22,
+          }}
+        >
+          <h2 style={{ fontSize: 20, fontWeight: 800, color: "#111827", marginBottom: 14 }}>
+            Product Description
+          </h2>
+          <div
+            className="product-rich-text"
+            dangerouslySetInnerHTML={{ __html: product.description }}
+          />
+        </section>
+      )}
+
       {reviews.length > 0 && (
         <ProductReviews reviews={reviews} averageRating={averageRating} />
       )}

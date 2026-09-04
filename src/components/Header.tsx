@@ -20,14 +20,6 @@ interface HeaderProps {
   logoUrl?: string | null;
 }
 
-const DEFAULT_NAV_ITEMS: NavItem[] = [
-  { label: "MEN", sub: [] },
-  { label: "WOMEN", sub: [] },
-  { label: "KIDS", sub: [] },
-  { label: "TEENS", sub: [] },
-  { label: "SPORTS", sub: [] },
-];
-
 function LogoPlaceholder() {
   return (
     <span
@@ -53,7 +45,7 @@ function HeaderInner({ logoUrl }: HeaderProps) {
   const [openDrop,      setOpenDrop]      = useState<string | null>(null);
   const [mobileExpand,  setMobileExpand]  = useState<string | null>(null);
   const [search,        setSearch]        = useState("");
-  const [navItems,      setNavItems]      = useState<NavItem[]>(DEFAULT_NAV_ITEMS);
+  const [navItems,      setNavItems]      = useState<NavItem[]>([]);
   const [resolvedLogo,  setResolvedLogo]  = useState<string | null>(logoUrl || layoutLogo || null);
   // Search dropdown
   const [allProducts,   setAllProducts]   = useState<Product[]>([]);
@@ -69,10 +61,10 @@ function HeaderInner({ logoUrl }: HeaderProps) {
   const activeSub  = searchParams.get("sub")  || "";
   const activeChild = searchParams.get("child") || "";
 
-  // Fetch dynamic menu from backend; fall back to static if unavailable
+  // The database-backed public menu is the only navigation source.
   useEffect(() => {
     fetchNavItems().then((items) => {
-      if (items.length > 0) setNavItems(items);
+      setNavItems(items);
     });
   }, []);
 

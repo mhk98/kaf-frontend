@@ -458,6 +458,39 @@ html {
   padding-top: 5px;
 }
 
+/* Rich text from the product editor (short & full description) */
+.product-rich-text {
+  color: #374151;
+  font-size: 15px;
+  line-height: 1.7;
+  word-break: break-word;
+}
+.product-rich-text h1,
+.product-rich-text h2,
+.product-rich-text h3,
+.product-rich-text h4 {
+  font-weight: 700;
+  color: #111827;
+  line-height: 1.4;
+  margin: 0.9em 0 0.4em;
+}
+.product-rich-text h1 { font-size: 1.4em; }
+.product-rich-text h2 { font-size: 1.25em; }
+.product-rich-text h3 { font-size: 1.1em; }
+.product-rich-text p { margin: 0.5em 0; }
+.product-rich-text ul,
+.product-rich-text ol { margin: 0.5em 0; padding-left: 1.4em; }
+.product-rich-text ul { list-style: disc; }
+.product-rich-text ol { list-style: decimal; }
+.product-rich-text li { margin: 0.25em 0; }
+.product-rich-text a { color: #10b8c4; text-decoration: underline; }
+.product-rich-text img { height: auto; margin: 0.6em 0; }
+.product-rich-text strong,
+.product-rich-text b { font-weight: 700; color: #111827; }
+.product-rich-text table { border-collapse: collapse; max-width: 100%; }
+.product-rich-text td,
+.product-rich-text th { border: 1px solid #e5e7eb; padding: 6px 10px; }
+
 .product-action-row {
   display: flex;
   gap: 6px;
@@ -1722,7 +1755,6 @@ button.header-action {
   width: 220px;
   height: 105px;
   margin-bottom: 2px;
-  filter: sepia(1) saturate(4) hue-rotate(352deg) brightness(1.25);
 }
 .kaf-footer-tagline {
   margin-bottom: 28px;
